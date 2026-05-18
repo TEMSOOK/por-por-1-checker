@@ -953,10 +953,8 @@ function expandSubjects(){
     // ── แถวหัวภาคเรียน ──
     const hdrTr=document.createElement('tr');
     hdrTr.innerHTML=`
-      <td colspan="5" style="
-        background:${yrBg};color:#fff;padding:0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;
-                    padding:9px 14px;">
+      <td colspan="4" style="background:${yrBg};color:#fff;padding:0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;">
           <span style="font-family:'Noto Serif Thai',serif;font-weight:700;font-size:13px;letter-spacing:.03em;">
             ม.${si.yr} ภาคเรียนที่ ${si.sem}
           </span>
@@ -980,16 +978,14 @@ function expandSubjects(){
     const sumTr=document.createElement('tr');
     sumTr.id=`semsum_${semIdx}`;
     sumTr.innerHTML=`
-      <td colspan="2"
-          style="padding:7px 12px;font-size:12px;color:var(--ink3);
-                 background:var(--paper2);border-top:1px solid var(--rule2);">
+      <td colspan="2" style="padding:7px 12px;font-size:12px;color:var(--ink3);
+               background:var(--paper2);border-top:1px solid var(--rule2);">
         รวมภาคเรียนนี้
       </td>
       <td style="padding:7px 12px;text-align:center;font-weight:700;font-size:14px;
-                 color:var(--teal-dark);background:var(--paper2);
-                 border-top:1px solid var(--rule2);" id="semsum_${semIdx}_val">0</td>
-      <td colspan="2"
-          style="background:var(--paper2);border-top:1px solid var(--rule2);"></td>`;
+               color:var(--teal-dark);background:var(--paper2);
+               border-top:1px solid var(--rule2);" id="semsum_${semIdx}_val">0</td>
+      <td style="background:var(--paper2);border-top:1px solid var(--rule2);"></td>`;
     container.appendChild(sumTr);
   });
 
