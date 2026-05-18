@@ -870,10 +870,15 @@ function handleFile(file) {
   fileSize.textContent = formatSize(file.size);
   uploadZone.style.display = 'none';
   filePreview.classList.add('show');
-  btnCheck.disabled = false;
+  btnCheck.disabled = true; // keep disabled until FileReader finishes
 
   const reader = new FileReader();
-  reader.onload = ev => { fileBase64 = ev.result.split(',')[1]; fileType = file.type; };
+  reader.onload = ev => {
+    fileBase64 = ev.result.split(',')[1];
+    fileType = file.type;
+    btnCheck.disabled = false; // now safe to enable
+  };
+  reader.onerror = () => { showErr('อ่านไฟล์ไม่สำเร็จ กรุณาลองใหม่'); };
   reader.readAsDataURL(file);
 }
 
