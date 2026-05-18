@@ -954,19 +954,20 @@ function expandSubjects(){
     const hdrTr=document.createElement('tr');
     hdrTr.innerHTML=`
       <td colspan="5" style="
-        background:${yrBg};color:#fff;
-        font-family:'Noto Serif Thai',serif;font-weight:700;font-size:13px;
-        padding:9px 14px;letter-spacing:.03em;
-        display:flex;align-items:center;justify-content:space-between;">
-        <span>ม.${si.yr} ภาคเรียนที่ ${si.sem}</span>
-        <button type="button"
-          onclick="addBigRow(${semIdx},'${yrBg}')"
-          style="background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);
-                 color:#fff;border-radius:7px;padding:3px 12px;font-size:12px;font-weight:700;
-                 font-family:'Sarabun',sans-serif;cursor:pointer;
-                 display:flex;align-items:center;gap:5px;transition:background .15s;">
-          + เพิ่มวิชา
-        </button>
+        background:${yrBg};color:#fff;padding:0;">
+        <div style="display:flex;align-items:center;justify-content:space-between;
+                    padding:9px 14px;">
+          <span style="font-family:'Noto Serif Thai',serif;font-weight:700;font-size:13px;letter-spacing:.03em;">
+            ม.${si.yr} ภาคเรียนที่ ${si.sem}
+          </span>
+          <button type="button"
+            onclick="addBigRow(${semIdx},'${yrBg}')"
+            style="background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);
+                   color:#fff;border-radius:7px;padding:3px 12px;font-size:12px;font-weight:700;
+                   font-family:'Sarabun',sans-serif;cursor:pointer;">
+            + เพิ่มวิชา
+          </button>
+        </div>
       </td>`;
     container.appendChild(hdrTr);
 
