@@ -1700,21 +1700,22 @@ async function runAiRead() {
     btn.style.opacity = '1';
   };
 
-  // อ่านไฟล์ใหม่ที่นี่เสมอ (เพื่อความแน่ใจ)
+  // อ่านไฟล์ด้วย arrayBuffer() — เร็วและเสถียรกว่า FileReader
   if (hasFile) {
     try {
-      await new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = ev => {
-          aiFileBase64 = ev.result.split(',')[1];
-          aiFileType = fileInput.files[0].type;
-          resolve();
-        };
-        r.onerror = () => reject(new Error('FileReader error'));
-        r.readAsDataURL(fileInput.files[0]);
-      });
+      const file = fileInput.files[0];
+      aiFileType = file.type;
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      // แปลงเป็น base64 ทีละ chunk เพื่อหลีกเลี่ยง stack overflow
+      const CHUNK = 8192;
+      for (let i = 0; i < bytes.length; i += CHUNK) {
+        binary += String.fromCharCode(...bytes.subarray(i, i + CHUNK));
+      }
+      aiFileBase64 = btoa(binary);
     } catch(e) {
-      showAiErr('อ่านไฟล์ไม่สำเร็จ กรุณาลองใหม่');
+      showAiErr('อ่านไฟล์ไม่สำเร็จ: ' + e.message);
       restoreBtn(); return;
     }
   }
