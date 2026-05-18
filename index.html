@@ -1637,24 +1637,29 @@ function handleAiFile(file) {
   document.getElementById('aiUploadZone').style.display = 'none';
   document.getElementById('aiFilePreview').classList.add('show');
 
-  // แสดงสถานะกำลังโหลด
-  const btn = document.getElementById('btnAiRead');
-  btn.textContent = '⏳ กำลังโหลดไฟล์...';
-  btn.style.opacity = '0.6';
+  // เริ่มอ่านไฟล์ (async) — ปุ่มกดได้ทันที ไม่รอ
+  aiFileBase64 = null;
+  aiFileType = file.type;
 
   const reader = new FileReader();
   reader.onload = ev => {
     aiFileBase64 = ev.result.split(',')[1];
-    aiFileType   = file.type;
-    btn.innerHTML = '✨ ให้ AI อ่านและกรอกข้อมูล';
-    btn.style.opacity = '1';
   };
-  reader.onerror = () => {
-    showAiErr('อ่านไฟล์ไม่สำเร็จ กรุณาลองใหม่');
-    btn.innerHTML = '✨ ให้ AI อ่านและกรอกข้อมูล';
-    btn.style.opacity = '1';
-  };
+  reader.onerror = () => showAiErr('อ่านไฟล์ไม่สำเร็จ กรุณาลองใหม่');
   reader.readAsDataURL(file);
+
+  // fallback: อ่านด้วย arrayBuffer แยกต่างหากถ้า onload ไม่ fire
+  const reader2 = new FileReader();
+  reader2.onload = ev2 => {
+    if (!aiFileBase64) {
+      // แปลง ArrayBuffer → base64 manually
+      const bytes = new Uint8Array(ev2.result);
+      let binary = '';
+      bytes.forEach(b => binary += String.fromCharCode(b));
+      aiFileBase64 = btoa(binary);
+    }
+  };
+  reader2.readAsArrayBuffer(file);
 }
 
 function clearAiFile() {
@@ -1675,21 +1680,51 @@ function fmtSize(b) {
 async function runAiRead() {
   const apiKey = document.getElementById('aiApiKey').value.trim();
   if (!apiKey) { showAiErr('กรุณากรอก Anthropic API Key ก่อน'); return; }
-  if (!aiFileBase64) {
+
+  // ตรวจว่ามีไฟล์ถูกเลือกหรือยัง
+  const fileInput = document.getElementById('aiFileInput');
+  const hasFile = fileInput.files && fileInput.files[0];
+  if (!hasFile && !aiFileBase64) {
     showAiErr('กรุณาเลือกไฟล์ ปพ.1 ก่อน (คลิกกล่องด้านบน)');
     return;
   }
 
   hideAiMsg();
-  
+
   const btn = document.getElementById('btnAiRead');
-  btn.innerHTML = '⏳ กำลังส่งให้ AI...';
+  btn.innerHTML = '⏳ กำลังโหลดไฟล์...';
   btn.style.opacity = '0.6';
 
   const restoreBtn = () => {
     btn.innerHTML = '✨ ให้ AI อ่านและกรอกข้อมูล';
     btn.style.opacity = '1';
   };
+
+  // อ่านไฟล์ใหม่ที่นี่เสมอ (เพื่อความแน่ใจ)
+  if (hasFile) {
+    try {
+      await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = ev => {
+          aiFileBase64 = ev.result.split(',')[1];
+          aiFileType = fileInput.files[0].type;
+          resolve();
+        };
+        r.onerror = () => reject(new Error('FileReader error'));
+        r.readAsDataURL(fileInput.files[0]);
+      });
+    } catch(e) {
+      showAiErr('อ่านไฟล์ไม่สำเร็จ กรุณาลองใหม่');
+      restoreBtn(); return;
+    }
+  }
+
+  if (!aiFileBase64) {
+    showAiErr('ไม่สามารถอ่านไฟล์ได้ กรุณาลองใหม่');
+    restoreBtn(); return;
+  }
+
+  btn.innerHTML = '⏳ กำลังส่งให้ AI...';
 
   setAiProg(10, 'กำลังส่งเอกสารให้ AI อ่าน...');
 
