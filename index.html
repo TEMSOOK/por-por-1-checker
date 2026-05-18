@@ -887,16 +887,20 @@ footer {
         placeholder="sk-ant-..." autocomplete="off">
     </div>
 
-    <!-- Hidden file input (outside zone) -->
+    <!-- Hidden file input -->
     <input type="file" id="aiFileInput" accept=".pdf,.jpg,.jpeg,.png"
-      style="display:none">
+      style="display:none"
+      onchange="if(this.files[0]) handleAiFile(this.files[0])">
 
-    <!-- Upload zone (click triggers hidden input) -->
+    <!-- Upload zone -->
     <div class="ai-upload-zone" id="aiUploadZone"
-      onclick="document.getElementById('aiFileInput').click()">
+      onclick="document.getElementById('aiFileInput').click()"
+      ondragover="event.preventDefault();this.classList.add('drag-over')"
+      ondragleave="this.classList.remove('drag-over')"
+      ondrop="event.preventDefault();this.classList.remove('drag-over');if(event.dataTransfer.files[0])handleAiFile(event.dataTransfer.files[0])">
       <div class="uz-icon">📄</div>
-      <div class="uz-title">แนบไฟล์ ปพ.1</div>
-      <div class="uz-sub">PDF, JPG, PNG · คลิกหรือลากวางไฟล์</div>
+      <div class="uz-title">คลิกเพื่อเลือกไฟล์ ปพ.1</div>
+      <div class="uz-sub">PDF, JPG, PNG · หรือลากวางไฟล์ที่นี่</div>
     </div>
 
     <!-- File preview -->
@@ -1086,22 +1090,6 @@ let sc = 0;
 window.addEventListener('DOMContentLoaded', () => {
   for(let i=0;i<3;i++) addS1();
   renderActStep1();
-
-  /* ── ผูก AI file events ── */
-  const aiFileInput  = document.getElementById('aiFileInput');
-  const aiUploadZone = document.getElementById('aiUploadZone');
-  if (aiFileInput && aiUploadZone) {
-    aiFileInput.addEventListener('change', e => {
-      if (e.target.files[0]) handleAiFile(e.target.files[0]);
-    });
-    aiUploadZone.addEventListener('dragover',  e => { e.preventDefault(); aiUploadZone.classList.add('drag-over'); });
-    aiUploadZone.addEventListener('dragleave', () => aiUploadZone.classList.remove('drag-over'));
-    aiUploadZone.addEventListener('drop', e => {
-      e.preventDefault();
-      aiUploadZone.classList.remove('drag-over');
-      if (e.dataTransfer.files[0]) handleAiFile(e.dataTransfer.files[0]);
-    });
-  }
 });
 
 /* ══ SUBJECTS step1 ══ */
@@ -1629,7 +1617,7 @@ function render(d){
 let aiFileBase64 = null;
 let aiFileType   = null;
 
-/* ── File handling ── */
+/* ── AI file handling ── */
 
 function handleAiFile(file) {
   const allowed = ['application/pdf','image/jpeg','image/jpg','image/png'];
