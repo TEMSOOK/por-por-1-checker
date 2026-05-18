@@ -1092,6 +1092,22 @@ let sc = 0;
 window.addEventListener('DOMContentLoaded', () => {
   for(let i=0;i<3;i++) addS1();
   renderActStep1();
+
+  /* ── ผูก AI file events ── */
+  const aiFileInput  = document.getElementById('aiFileInput');
+  const aiUploadZone = document.getElementById('aiUploadZone');
+  if (aiFileInput && aiUploadZone) {
+    aiFileInput.addEventListener('change', e => {
+      if (e.target.files[0]) handleAiFile(e.target.files[0]);
+    });
+    aiUploadZone.addEventListener('dragover',  e => { e.preventDefault(); aiUploadZone.classList.add('drag-over'); });
+    aiUploadZone.addEventListener('dragleave', () => aiUploadZone.classList.remove('drag-over'));
+    aiUploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      aiUploadZone.classList.remove('drag-over');
+      if (e.dataTransfer.files[0]) handleAiFile(e.dataTransfer.files[0]);
+    });
+  }
 });
 
 /* ══ SUBJECTS step1 ══ */
@@ -1620,19 +1636,6 @@ let aiFileBase64 = null;
 let aiFileType   = null;
 
 /* ── File handling ── */
-const aiFileInput = document.getElementById('aiFileInput');
-const aiUploadZone = document.getElementById('aiUploadZone');
-
-aiFileInput.addEventListener('change', e => {
-  if (e.target.files[0]) handleAiFile(e.target.files[0]);
-});
-aiUploadZone.addEventListener('dragover',  e => { e.preventDefault(); aiUploadZone.classList.add('drag-over'); });
-aiUploadZone.addEventListener('dragleave', () => aiUploadZone.classList.remove('drag-over'));
-aiUploadZone.addEventListener('drop', e => {
-  e.preventDefault();
-  aiUploadZone.classList.remove('drag-over');
-  if (e.dataTransfer.files[0]) handleAiFile(e.dataTransfer.files[0]);
-});
 
 function handleAiFile(file) {
   const allowed = ['application/pdf','image/jpeg','image/jpg','image/png'];
