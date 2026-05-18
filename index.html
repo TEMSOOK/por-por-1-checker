@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบตรวจสอบ ปพ.1</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  /* แพลตฟอร์มหลัก */
+  --teal:       #0D7377;
+  --teal-dark:  #09565A;
+  --teal-light: #14A5AB;
+  --teal-pale:  #E0F4F5;
+  --gold:       #E8A020;
+  --gold-light: #FFF3D6;
+  --gold-dark:  #B87B0A;
+
+  /* สีผล */
+  --green:      #15803D;
+  --gbg:        #DCFCE7;
+  --gbd:        #86EFAC;
+  --red:        #B91C1C;
+  --rbg:        #FEE2E2;
+  --rbd:        #FCA5A5;
+
+  /* neutral */
+  --ink:        #1A2B2C;
+  --ink2:       #334E52;
+  --ink3:       #5E7E82;
+  --ink4:       #9AB4B7;
+  --paper:      #F7FAFA;
+  --paper2:     #EEF6F7;
+  --paper3:     #D9ECEE;
+  --rule:       #C5DCDE;
+  --rule2:      #DDF0F1;
+
+  /* pill colors */
+  --blue:       #1D4ED8;
+  --bbg:        #DBEAFE;
+  --amber:      #92400E;
+  --abg:        #FEF3C7;
+
+  --r:  10px;
+  --rlg: 16px;
+  --sh:  0 2px 8px rgba(13,115,119,.10), 0 0 0 1px rgba(13,115,119,.06);
+  --sh2: 0 4px 20px rgba(13,115,119,.14);
+}
+
+html { font-size: 15px; scroll-behavior: smooth; }
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: linear-gradient(160deg, #E8F5F6 0%, #F7FAFA 50%, #FFF8ED 100%);
+  background-attachment: fixed;
+  color: var(--ink);
+  min-height: 100vh;
+  line-height: 1.65;
+}
+
+/* ────────────────────────────────────────
+   TOPBAR
+──────────────────────────────────────── */
+.topbar {
+  background: linear-gradient(90deg, var(--teal-dark) 0%, var(--teal) 60%, var(--teal-light) 100%);
+  padding: 0 1.5rem;
+  position: sticky; top: 0; z-index: 200;
+  box-shadow: 0 3px 12px rgba(9,86,90,.35);
+}
+.topbar-inner {
+  max-width: 1060px; margin: 0 auto;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'Noto Serif Thai', serif;
+  font-weight: 700; font-size: 16px; color: #fff;
+  text-decoration: none; letter-spacing: .01em;
+}
+.logo-box {
+  width: 34px; height: 34px;
+  background: rgba(255,255,255,.2);
+  border: 1.5px solid rgba(255,255,255,.35);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.topbar-tag {
+  font-size: 11px; font-weight: 600;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 100px;
+  padding: 4px 12px;
+  color: rgba(255,255,255,.9);
+  letter-spacing: .03em;
+}
+
+/* ────────────────────────────────────────
+   HERO BANNER
+──────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 45%, #1A8E7A 100%);
+  padding: 2.5rem 1.5rem 3rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.hero-inner { position: relative; max-width: 1060px; margin: 0 auto; }
+.hero h1 {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 30px; font-weight: 800;
+  color: #fff; margin-bottom: 8px;
+  text-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+.hero p {
+  font-size: 14px; color: rgba(255,255,255,.8);
+  margin-bottom: 2rem;
+}
+
+/* ────────────────────────────────────────
+   CRITERIA STRIP  (overlapping hero)
+──────────────────────────────────────── */
+.crit-wrap {
+  max-width: 1060px; margin: 0 auto;
+  padding: 0 1.5rem;
+  transform: translateY(-28px);
+}
+.crit-strip {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 12px;
+}
+@media(max-width:640px){ .crit-strip{grid-template-columns:repeat(2,1fr);} }
+
+.cc {
+  background: #fff;
+  border-radius: var(--r);
+  box-shadow: var(--sh2);
+  padding: 14px 16px;
+  border-top: 4px solid var(--teal);
+  transition: transform .18s, box-shadow .18s;
+}
+.cc:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(13,115,119,.18); }
+.cc:nth-child(2) { border-top-color: var(--gold); }
+.cc:nth-child(3) { border-top-color: #7C3AED; }
+.cc:nth-child(4) { border-top-color: #0E9F6E; }
+.cc .lbl {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em;
+  color: var(--ink3); margin-bottom: 5px;
+}
+.cc .val {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 28px; font-weight: 800; line-height: 1;
+  color: var(--teal);
+}
+.cc:nth-child(2) .val { color: var(--gold-dark); }
+.cc:nth-child(3) .val { color: #7C3AED; }
+.cc:nth-child(4) .val { color: #0E9F6E; }
+.cc .unit { font-size: 12px; color: var(--ink3); margin-top: 4px; }
+
+/* ────────────────────────────────────────
+   MAIN LAYOUT
+──────────────────────────────────────── */
+.main {
+  max-width: 1060px; margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+}
+
+/* ────────────────────────────────────────
+   SECTION TITLE
+──────────────────────────────────────── */
+.sec-title {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 17px; font-weight: 700;
+  margin-bottom: .9rem;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--teal-dark);
+}
+.sec-title .icon {
+  width: 32px; height: 32px;
+  background: var(--teal-pale);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+/* ────────────────────────────────────────
+   CARD
+──────────────────────────────────────── */
+.card {
+  background: #fff;
+  border-radius: var(--rlg);
+  box-shadow: var(--sh);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(13,115,119,.08);
+}
+
+/* ────────────────────────────────────────
+   HINT BOX
+──────────────────────────────────────── */
+.hint {
+  font-size: 13px;
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border: 1px solid #FCD34D;
+  border-left: 4px solid var(--gold);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  margin-bottom: 1.1rem;
+  line-height: 1.8;
+  color: #78350F;
+}
+.hint strong { color: #92400E; }
+
+.step-label {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .06em;
+  color: var(--teal);
+  margin-bottom: .6rem;
+  display: flex; align-items: center; gap: 6px;
+}
+.step-label::before {
+  content: '';
+  display: inline-block; width: 18px; height: 3px;
+  background: var(--teal); border-radius: 2px;
+}
+
+/* ────────────────────────────────────────
+   SUBJECT INPUT TABLE (step 1)
+──────────────────────────────────────── */
+.sw { overflow-x: auto; }
+.st1 {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; min-width: 460px;
+}
+.st1 thead th {
+  background: linear-gradient(90deg, var(--teal-pale), #F0FAF5);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--teal-dark);
+  padding: 10px 10px; text-align: left;
+  border-bottom: 2px solid var(--teal-light);
+  white-space: nowrap;
+}
+.st1 thead th.r { text-align: right; }
+.st1 tbody tr { border-bottom: 1px solid var(--rule2); }
+.st1 tbody tr:hover { background: var(--teal-pale); }
+.st1 tbody td { padding: 6px 8px; vertical-align: middle; }
+.st1 input[type=text], .st1 input[type=number] {
+  width: 100%; border: 1.5px solid var(--rule);
+  border-radius: 7px; padding: 6px 9px;
+  font-size: 13px; font-family: 'Sarabun', sans-serif;
+  background: var(--paper); color: var(--ink);
+  outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.st1 input[type=number] { text-align: center; }
+.st1 input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
+  background: #fff;
+}
+.st1 select {
+  width: 100%; border: 1.5px solid var(--rule);
+  border-radius: 7px; padding: 6px 8px;
+  font-size: 13px; font-family: 'Sarabun', sans-serif;
+  background: var(--paper); color: var(--ink); outline: none;
+  transition: border-color .15s;
+}
+.st1 select:focus { border-color: var(--teal); }
+
+/* ────────────────────────────────────────
+   BUTTONS
+──────────────────────────────────────── */
+.btn-del {
+  background: none; border: none; cursor: pointer;
+  color: var(--ink4); padding: 3px 7px;
+  border-radius: 5px; font-size: 16px; line-height: 1;
+  transition: color .15s, background .15s;
+}
+.btn-del:hover { color: var(--red); background: var(--rbg); }
+
+.btn-add {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none;
+  border: 1.5px dashed var(--teal-light);
+  border-radius: var(--r);
+  padding: 8px 16px;
+  font-size: 13px; font-family: 'Sarabun', sans-serif;
+  color: var(--teal); cursor: pointer;
+  transition: border-color .15s, background .15s;
+  margin-top: 12px;
+}
+.btn-add:hover { border-color: var(--teal-dark); background: var(--teal-pale); }
+
+.btn-expand {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-light));
+  color: #fff; border: none;
+  border-radius: var(--r);
+  padding: 10px 22px;
+  font-size: 14px; font-weight: 600;
+  font-family: 'Sarabun', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(13,115,119,.3);
+  transition: opacity .2s, transform .15s, box-shadow .2s;
+  margin-top: 12px;
+}
+.btn-expand:hover {
+  opacity: .92;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(13,115,119,.38);
+}
+.btn-expand:active { transform: scale(.98); }
+
+/* ────────────────────────────────────────
+   EXPANDED SECTION
+──────────────────────────────────────── */
+.expanded-section { display: none; margin-top: 1.5rem; }
+.expanded-section.show { display: block; }
+.expanded-label {
+  font-size: 12px; font-weight: 700;
+  color: var(--teal);
+  margin-bottom: .75rem;
+  padding: 8px 12px;
+  background: var(--teal-pale);
+  border-radius: var(--r);
+  border-left: 3px solid var(--teal);
+}
+
+/* ────────────────────────────────────────
+   BIG SUBJECT TABLE (6 sems)
+──────────────────────────────────────── */
+.stbig {
+  width: 100%; border-collapse: collapse;
+  font-size: 13px; min-width: 780px;
+}
+.stbig thead th {
+  background: var(--paper2);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--ink3);
+  padding: 9px 10px; text-align: center;
+  border-bottom: 1.5px solid var(--rule);
+  white-space: nowrap;
+}
+.stbig thead th.left { text-align: left; }
+.stbig .yr-hd {
+  font-size: 11px; font-weight: 700;
+  text-align: center; padding: 6px 0;
+  letter-spacing: .04em; color: #fff;
+}
+.yr-hd-1 { background: linear-gradient(90deg,#0D7377,#14A5AB); }
+.yr-hd-2 { background: linear-gradient(90deg,#7C3AED,#A855F7); }
+.yr-hd-3 { background: linear-gradient(90deg,#0E9F6E,#34D399); }
+.stbig tbody tr { border-bottom: 1px solid var(--rule2); }
+.stbig tbody tr:hover { background: var(--teal-pale); }
+.stbig tbody td { padding: 6px 9px; vertical-align: middle; }
+.stbig input[type=number] {
+  width: 58px; border: 1.5px solid var(--rule);
+  border-radius: 6px; padding: 4px 6px;
+  font-size: 13px; font-family: 'Sarabun', sans-serif;
+  text-align: center; background: var(--paper);
+  color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.stbig input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
+  background: #fff;
+}
+.cell-total { font-weight: 700; text-align: center; font-size: 13px; color: var(--teal-dark); }
+.tfoot-big td {
+  font-size: 13px; font-weight: 700;
+  background: var(--teal-pale);
+  border-top: 2px solid var(--teal-light);
+  padding: 9px 10px; text-align: center;
+  color: var(--teal-dark);
+}
+.tfoot-big td.left { text-align: left; }
+
+/* ────────────────────────────────────────
+   ACTIVITY step-1 TABLE
+──────────────────────────────────────── */
+.at1 { width: 100%; border-collapse: collapse; font-size: 13px; }
+.at1 thead th {
+  background: linear-gradient(90deg, var(--teal-pale), #F0FAF5);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--teal-dark); padding: 10px 12px;
+  text-align: left; border-bottom: 2px solid var(--teal-light);
+}
+.at1 thead th.r { text-align: center; }
+.at1 tbody tr { border-bottom: 1px solid var(--rule2); }
+.at1 tbody tr:hover { background: var(--teal-pale); }
+.at1 tbody td { padding: 10px 12px; vertical-align: middle; }
+.at1 input[type=number] {
+  width: 80px; border: 1.5px solid var(--rule);
+  border-radius: 7px; padding: 6px 8px;
+  font-size: 14px; font-family: 'Sarabun', sans-serif;
+  text-align: center; background: var(--paper);
+  color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.at1 input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
+  background: #fff;
+}
+.an { font-weight: 600; font-size: 14px; color: var(--ink); }
+.anote { font-size: 11px; color: var(--ink3); margin-top: 3px; }
+
+/* activity sum tfoot row */
+.at1 tfoot tr {
+  background: var(--teal-pale);
+  border-top: 2px solid var(--teal-light);
+}
+.at1 tfoot td {
+  padding: 9px 12px;
+  font-weight: 700; font-size: 13px;
+  color: var(--teal-dark);
+  text-align: center;
+}
+.at1 tfoot td.left { text-align: left; }
+
+/* ────────────────────────────────────────
+   ACTIVITY BIG TABLE (6 sems)
+──────────────────────────────────────── */
+.atbig { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 680px; }
+.atbig thead th {
+  background: var(--paper2);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--ink3); padding: 9px 10px;
+  text-align: center; border-bottom: 1.5px solid var(--rule);
+  white-space: nowrap;
+}
+.atbig thead th.left { text-align: left; }
+.atbig tbody tr { border-bottom: 1px solid var(--rule2); }
+.atbig tbody tr:hover { background: var(--teal-pale); }
+.atbig tbody td { padding: 7px 10px; vertical-align: middle; }
+.atbig input[type=number] {
+  width: 62px; border: 1.5px solid var(--rule);
+  border-radius: 6px; padding: 4px 6px;
+  font-size: 13px; font-family: 'Sarabun', sans-serif;
+  text-align: center; background: var(--paper);
+  color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.atbig input:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
+  background: #fff;
+}
+.at-rowtot { font-weight: 700; text-align: center; font-size: 13px; color: var(--teal-dark); }
+.atbig tfoot td {
+  font-size: 13px; font-weight: 700;
+  background: var(--teal-pale);
+  border-top: 2px solid var(--teal-light);
+  padding: 8px 10px; text-align: center;
+  color: var(--teal-dark);
+}
+.atbig tfoot td.left { text-align: left; }
+
+/* ────────────────────────────────────────
+   CHECK BUTTON
+──────────────────────────────────────── */
+.btn-check {
+  width: 100%; padding: 16px;
+  font-size: 17px; font-weight: 700;
+  font-family: 'Noto Serif Thai', serif;
+  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 50%, var(--teal-light) 100%);
+  color: #fff; border: none;
+  border-radius: var(--rlg);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  box-shadow: 0 4px 18px rgba(13,115,119,.35);
+  transition: opacity .2s, transform .15s, box-shadow .2s;
+  margin-bottom: 2rem;
+  letter-spacing: .02em;
+}
+.btn-check:hover {
+  opacity: .94;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(13,115,119,.42);
+}
+.btn-check:active { transform: scale(.99); }
+
+/* ────────────────────────────────────────
+   RESULT SECTION
+──────────────────────────────────────── */
+.rs { display: none; animation: fu .4s ease; }
+.rs.show { display: block; }
+@keyframes fu { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:none;} }
+
+/* overall banner */
+.overall {
+  border-radius: var(--rlg);
+  box-shadow: var(--sh2);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.25rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+}
+.overall.pass {
+  background: linear-gradient(135deg, #DCFCE7, #BBFFD3);
+  border: 1.5px solid var(--gbd);
+}
+.overall.fail {
+  background: linear-gradient(135deg, #FEE2E2, #FFCCCC);
+  border: 1.5px solid var(--rbd);
+}
+.ov-t {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 22px; font-weight: 800;
+}
+.ov-t.pass { color: #14532D; }
+.ov-t.fail { color: #7F1D1D; }
+.ov-s { font-size: 14px; margin-top: 4px; }
+.ov-s.pass { color: var(--green); }
+.ov-s.fail { color: var(--red); }
+.ov-emoji { font-size: 40px; }
+
+/* summary cards */
+.sg {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
+  gap: 12px; margin-bottom: 1.5rem;
+}
+.sc {
+  background: #fff;
+  border-radius: var(--r);
+  box-shadow: var(--sh);
+  padding: 14px 16px;
+  border-top: 4px solid transparent;
+  transition: transform .15s;
+}
+.sc:hover { transform: translateY(-2px); }
+.sc.pass { border-top-color: #22C55E; }
+.sc.fail { border-top-color: #EF4444; }
+.sc .cl {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em;
+  color: var(--ink3); margin-bottom: 6px;
+}
+.sc .cv {
+  font-family: 'Noto Serif Thai', serif;
+  font-size: 26px; font-weight: 800; line-height: 1;
+}
+.sc .cv.pass { color: var(--green); }
+.sc .cv.fail { color: var(--red); }
+.sc .cr { font-size: 12px; color: var(--ink3); margin-top: 5px; }
+.sc .cs { font-size: 12px; font-weight: 700; margin-top: 5px; }
+.sc .cs.pass { color: var(--green); }
+.sc .cs.fail { color: var(--red); }
+
+/* progress bars */
+.pg {
+  background: #fff;
+  border-radius: var(--rlg);
+  box-shadow: var(--sh);
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.pg-lbl {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em;
+  color: var(--teal); margin-bottom: 16px;
+}
+.pr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.pr:last-child { margin-bottom: 0; }
+.pr-l { font-size: 13px; color: var(--ink2); min-width: 165px; }
+.pr-t {
+  flex: 1; height: 10px;
+  background: var(--paper3);
+  border-radius: 5px; overflow: hidden;
+}
+.pr-f {
+  height: 100%; border-radius: 5px;
+  transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.pr-f.good { background: linear-gradient(90deg, #22C55E, #4ADE80); }
+.pr-f.warn { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
+.pr-f.bad  { background: linear-gradient(90deg, #EF4444, #F87171); }
+.pr-v { font-size: 13px; font-weight: 700; min-width: 70px; text-align: right; }
+
+/* issues box */
+.ib {
+  background: linear-gradient(135deg, #FEE2E2, #FFEDED);
+  border: 1px solid var(--rbd);
+  border-left: 4px solid var(--red);
+  border-radius: var(--r);
+  padding: 14px 16px; margin-bottom: 1.25rem;
+}
+.ib h4 { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 10px; }
+.ib li { font-size: 13px; color: #9B1C1C; margin-bottom: 5px; margin-left: 18px; }
+
+/* tabs */
+.tabs {
+  display: flex; gap: 4px;
+  border-bottom: 2px solid var(--rule2);
+  margin-bottom: 1.25rem; overflow-x: auto;
+}
+.tb {
+  font-family: 'Sarabun', sans-serif;
+  font-size: 14px; font-weight: 500;
+  padding: 10px 20px; border: none; background: none;
+  cursor: pointer; color: var(--ink3);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px; white-space: nowrap;
+  transition: color .15s; border-radius: 6px 6px 0 0;
+}
+.tb:hover { color: var(--teal); background: var(--teal-pale); }
+.tb.active { color: var(--teal-dark); border-bottom-color: var(--teal); font-weight: 700; background: var(--teal-pale); }
+.tp { display: none; }
+.tp.active { display: block; }
+
+/* result tables */
+.rw {
+  background: #fff; border-radius: var(--rlg);
+  box-shadow: var(--sh); overflow: hidden; overflow-x: auto;
+  margin-bottom: 1.25rem;
+}
+.rt { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
+.rt thead th {
+  background: linear-gradient(90deg, var(--teal-pale), #F0FAF5);
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+  color: var(--teal-dark); padding: 10px 12px;
+  text-align: left; border-bottom: 2px solid var(--teal-light);
+}
+.rt thead th.r { text-align: right; }
+.rt tbody tr { border-bottom: 1px solid var(--rule2); }
+.rt tbody tr:hover { background: var(--teal-pale); }
+.rt tbody td { padding: 9px 12px; }
+.rt tfoot td {
+  padding: 10px 12px; font-weight: 700;
+  background: var(--teal-pale);
+  border-top: 2px solid var(--teal-light);
+  color: var(--teal-dark);
+}
+.r { text-align: right; font-weight: 600; }
+.pill {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 100px;
+}
+.pill.core    { background: var(--bbg); color: var(--blue); }
+.pill.elective { background: var(--abg); color: var(--amber); }
+
+/* activity result grid */
+.arg { margin-bottom: 1rem; }
+
+/* print button */
+.btn-print {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1.5px solid var(--teal-light);
+  border-radius: var(--r); padding: 8px 18px;
+  font-size: 13px; font-family: 'Sarabun', sans-serif;
+  color: var(--teal); cursor: pointer;
+  transition: border-color .15s, background .15s;
+  margin-bottom: 1.5rem;
+}
+.btn-print:hover { border-color: var(--teal-dark); background: var(--teal-pale); }
+
+/* footer */
+footer {
+  text-align: center; padding: 2rem 1.5rem;
+  font-size: 12px; color: var(--ink4);
+  border-top: 1px solid var(--rule2);
+  margin-top: 2rem;
+  background: rgba(255,255,255,.5);
+}
+
+@media print {
+  .topbar,.hero,.crit-wrap,.card,.sec-title,.btn-check,.btn-print,.tabs{display:none!important;}
+  .rs{display:block!important;} body{background:#fff;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#" class="logo">
+      <div class="logo-box">📋</div>
+      ระบบตรวจสอบ ปพ.1
+    </a>
+    <span class="topbar-tag">หลักสูตรแกนกลาง 2551</span>
+  </div>
+</header>
+
+<!-- ══ HERO ══ -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>ระบบตรวจสอบ ปพ.1</h1>
+    <p>กรอกข้อมูลรายวิชาและกิจกรรมพัฒนาผู้เรียน ระบบจะตรวจสอบตามเกณฑ์หลักสูตรแกนกลางให้ทันที</p>
+  </div>
+</div>
+
+<!-- ══ CRITERIA STRIP (overlaps hero) ══ -->
+<div class="crit-wrap">
+  <div class="crit-strip">
+    <div class="cc">
+      <div class="lbl">รวมหน่วยกิต</div>
+      <div class="val">81</div>
+      <div class="unit">หน่วยกิตพอดี</div>
+    </div>
+    <div class="cc">
+      <div class="lbl">วิชาพื้นฐาน</div>
+      <div class="val">66</div>
+      <div class="unit">หน่วยกิตพอดี</div>
+    </div>
+    <div class="cc">
+      <div class="lbl">วิชาเพิ่มเติม</div>
+      <div class="val">15</div>
+      <div class="unit">หน่วยกิตพอดี</div>
+    </div>
+    <div class="cc">
+      <div class="lbl">กิจกรรมรวม/ภาค</div>
+      <div class="val">60</div>
+      <div class="unit">ชม./ภาคพอดี</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- ─── รายวิชา ─── -->
+  <div class="sec-title">
+    <div class="icon">📚</div>
+    รายวิชา
+  </div>
+  <div class="card">
+    <div class="hint">
+      <strong>ขั้นตอน:</strong> กรอกวิชาและหน่วยกิตของ <strong>ม.1 ภาคเรียนที่ 1</strong> ก่อน
+      แล้วกดปุ่ม <strong>"สร้างตารางทั้ง 6 ภาคเรียน"</strong> ระบบจะขยายตารางให้ครบทุกภาค
+      และสามารถแก้ไขหน่วยกิตแต่ละภาคได้ทันที
+    </div>
+    <div class="step-label">ม.1 ภาคเรียนที่ 1 — กรอกรายวิชาและหน่วยกิต</div>
+    <div class="sw">
+      <table class="st1">
+        <thead>
+          <tr>
+            <th style="width:28px">#</th>
+            <th style="min-width:180px">ชื่อวิชา</th>
+            <th style="width:110px">ประเภท</th>
+            <th class="r" style="width:85px">หน่วยกิต</th>
+            <th style="width:28px"></th>
+          </tr>
+        </thead>
+        <tbody id="sb1"></tbody>
+      </table>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button type="button" class="btn-add" onclick="addS1()">+ เพิ่มวิชา</button>
+      <button type="button" class="btn-expand" onclick="expandSubjects()">↓ สร้างตารางทั้ง 6 ภาคเรียน</button>
+    </div>
+
+    <div class="expanded-section" id="subjExpanded">
+      <div class="expanded-label">✏️ แก้ไขหน่วยกิตแต่ละภาคเรียนได้ในช่องด้านล่าง</div>
+      <div class="sw">
+        <table class="stbig">
+          <thead>
+            <tr>
+              <th class="left" rowspan="2" style="min-width:170px">ชื่อวิชา</th>
+              <th class="left" rowspan="2" style="width:95px">ประเภท</th>
+              <th colspan="2" class="yr-hd yr-hd-1">ม.1</th>
+              <th colspan="2" class="yr-hd yr-hd-2">ม.2</th>
+              <th colspan="2" class="yr-hd yr-hd-3">ม.3</th>
+              <th rowspan="2" style="width:55px;text-align:center">รวม</th>
+            </tr>
+            <tr>
+              <th>ภาค 1</th><th>ภาค 2</th>
+              <th>ภาค 1</th><th>ภาค 2</th>
+              <th>ภาค 1</th><th>ภาค 2</th>
+            </tr>
+          </thead>
+          <tbody id="sbBig"></tbody>
+          <tfoot id="sbBigFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── กิจกรรม ─── -->
+  <div class="sec-title">
+    <div class="icon">🎯</div>
+    กิจกรรมพัฒนาผู้เรียน (ชั่วโมง)
+  </div>
+  <div class="card">
+    <div class="hint">
+      <strong>เกณฑ์:</strong>
+      รวมทุกกิจกรรม ต้องได้ <strong>60 ชม./ภาคเรียนพอดี</strong> (= 120 ชม./ปี) |
+      กิจกรรมเพื่อสังคมฯ รวมทั้งปีต้อง <strong>ไม่เกิน 15 ชม./ปี</strong><br>
+      <strong>ขั้นตอน:</strong> กรอกชั่วโมงสำหรับ <strong>ภาคเรียนที่ 1</strong> แล้วกด <strong>"สร้างตารางทั้ง 6 ภาคเรียน"</strong>
+    </div>
+    <div class="step-label">ภาคเรียนที่ 1 — กรอกชั่วโมงกิจกรรม</div>
+    <div class="sw">
+      <table class="at1">
+        <thead>
+          <tr>
+            <th style="min-width:220px">กิจกรรม</th>
+            <th class="r" style="width:140px">ชั่วโมง / ภาค</th>
+          </tr>
+        </thead>
+        <tbody id="ab1"></tbody>
+        <tfoot>
+          <tr>
+            <td class="left" style="font-size:13px">รวมทุกกิจกรรม</td>
+            <td id="a1Sum" style="font-size:15px">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <button type="button" class="btn-expand" onclick="expandActivities()">↓ สร้างตารางทั้ง 6 ภาคเรียน</button>
+
+    <div class="expanded-section" id="actExpanded">
+      <div class="expanded-label">✏️ แก้ไขชั่วโมงแต่ละภาคเรียนได้ในช่องด้านล่าง</div>
+      <div class="sw">
+        <table class="atbig">
+          <thead>
+            <tr>
+              <th class="left" style="min-width:195px">กิจกรรม</th>
+              <th>ม.1 ภาค 1</th><th>ม.1 ภาค 2</th>
+              <th>ม.2 ภาค 1</th><th>ม.2 ภาค 2</th>
+              <th>ม.3 ภาค 1</th><th>ม.3 ภาค 2</th>
+              <th>รวม</th>
+            </tr>
+          </thead>
+          <tbody id="abBig"></tbody>
+          <tfoot id="abBigFoot"></tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── ปุ่มตรวจสอบ ─── -->
+  <button type="button" class="btn-check" onclick="runCheck()">
+    ✓ ตรวจสอบและรายงานผล
+  </button>
+
+  <!-- ─── ผลลัพธ์ ─── -->
+  <div class="rs" id="rs">
+    <button type="button" class="btn-print" onclick="window.print()">🖨 พิมพ์รายงาน</button>
+
+    <div class="overall" id="overall">
+      <div>
+        <div class="ov-t" id="ovT">—</div>
+        <div class="ov-s" id="ovS">—</div>
+      </div>
+      <div class="ov-emoji" id="ovEmoji"></div>
+    </div>
+
+    <div class="sg" id="sg"></div>
+
+    <div class="pg">
+      <div class="pg-lbl">ความคืบหน้าหน่วยกิต</div>
+      <div id="pgBars"></div>
+    </div>
+
+    <div id="ib"></div>
+
+    <div class="tabs">
+      <button type="button" class="tb active" onclick="swT('subjects',this)">📖 รายวิชาทั้งหมด</button>
+      <button type="button" class="tb" onclick="swT('activities',this)">🎯 กิจกรรมพัฒนาผู้เรียน</button>
+    </div>
+    <div class="tp active" id="panel-subjects">
+      <div class="rw" id="rtWrap"></div>
+    </div>
+    <div class="tp" id="panel-activities">
+      <div class="arg" id="arg"></div>
+    </div>
+  </div>
+
+</main>
+<footer>ระบบตรวจสอบ ปพ.1 · อ้างอิงหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พ.ศ. 2551</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════════════════ */
+const ACTS = [
+  { id:'guidance', name:'แนะแนว' },
+  { id:'scouts',   name:'ลูกเสือ / เนตรนารี' },
+  { id:'club',     name:'ชุมนุม' },
+  { id:'social',   name:'กิจกรรมเพื่อสังคมและสาธารณประโยชน์', maxPerYear:15 },
+];
+const SEM_LABELS = ['ม.1 ภาค 1','ม.1 ภาค 2','ม.2 ภาค 1','ม.2 ภาค 2','ม.3 ภาค 1','ม.3 ภาค 2'];
+let sc = 0;
+
+/* ══ INIT ══ */
+window.addEventListener('DOMContentLoaded', () => {
+  for(let i=0;i<3;i++) addS1();
+  renderActStep1();
+});
+
+/* ══ SUBJECTS step1 ══ */
+function addS1(){
+  sc++;
+  const id='s1_'+sc;
+  const tr=document.createElement('tr');
+  tr.id=id;
+  tr.innerHTML=`
+    <td style="text-align:center;color:var(--ink4);font-size:12px">${sc}</td>
+    <td><input type="text" placeholder="เช่น ภาษาไทย" oninput="updA1Sum()"></td>
+    <td><select onchange="updA1Sum()">
+      <option value="core">พื้นฐาน</option>
+      <option value="elective">เพิ่มเติม</option>
+    </select></td>
+    <td><input type="number" min="0" max="99" step="0.5" value="0" oninput="updA1Sum()"></td>
+    <td><button type="button" class="btn-del" onclick="delS1('${id}')">×</button></td>`;
+  document.getElementById('sb1').appendChild(tr);
+  updA1Sum();
+}
+function delS1(id){ document.getElementById(id)?.remove(); updA1Sum(); }
+function updA1Sum(){}
+
+/* ══ SUBJECTS expand ══ */
+function expandSubjects(){
+  const rows=[];
+  document.querySelectorAll('#sb1 tr').forEach(tr=>{
+    const ins=tr.querySelectorAll('input,select');
+    if(!ins.length) return;
+    const name=(ins[0].value||'').trim();
+    const type=ins[1].value||'core';
+    const credits=parseFloat(ins[2].value)||0;
+    if(!name) return;
+    rows.push({name,type,credits});
+  });
+  if(!rows.length){ alert('กรุณากรอกชื่อวิชาอย่างน้อย 1 วิชาก่อน'); return; }
+
+  const tbody=document.getElementById('sbBig');
+  tbody.innerHTML='';
+  rows.forEach((row,i)=>{
+    const id='sbig_'+i;
+    const cells=[0,1,2,3,4,5].map(si=>`
+      <td><input type="number" id="${id}_s${si}" min="0" max="99" step="0.5"
+        value="${row.credits}" oninput="updBigRow('${id}')"></td>`).join('');
+    const tr=document.createElement('tr');
+    tr.id=id;
+    tr.dataset.type=row.type;
+    tr.innerHTML=`
+      <td style="font-weight:500">${row.name}</td>
+      <td><span class="pill ${row.type}">${row.type==='core'?'พื้นฐาน':'เพิ่มเติม'}</span></td>
+      ${cells}
+      <td class="cell-total" id="${id}_tot">${f(row.credits*6)}</td>`;
+    tbody.appendChild(tr);
+    updBigRow(id);
+  });
+  updBigFoot();
+  document.getElementById('subjExpanded').classList.add('show');
+}
+
+function updBigRow(id){
+  let sum=0;
+  for(let i=0;i<6;i++) sum+=parseFloat(document.getElementById(`${id}_s${i}`)?.value)||0;
+  const el=document.getElementById(id+'_tot');
+  if(el) el.textContent=f(sum);
+  updBigFoot();
+}
+
+function updBigFoot(){
+  const rows=[...document.querySelectorAll('#sbBig tr')];
+  const semTots=[0,1,2,3,4,5].map(si=>
+    rows.reduce((a,tr)=>a+(parseFloat(document.getElementById(tr.id+'_s'+si)?.value)||0),0)
+  );
+  const grandTot=semTots.reduce((a,v)=>a+v,0);
+  const coreT=rows.filter(tr=>tr.dataset.type==='core')
+    .reduce((a,tr)=>{ let s=0; for(let i=0;i<6;i++) s+=parseFloat(document.getElementById(tr.id+'_s'+i)?.value)||0; return a+s; },0);
+  const elecT=grandTot-coreT;
+  const tfoot=document.getElementById('sbBigFoot');
+  tfoot.innerHTML=`
+    <tr class="tfoot-big">
+      <td class="left" colspan="2">รวมทั้งหมด</td>
+      ${semTots.map(v=>`<td>${f(v)}</td>`).join('')}
+      <td style="font-size:14px">${f(grandTot)}</td>
+    </tr>
+    <tr class="tfoot-big">
+      <td class="left" colspan="8" style="font-weight:400;font-size:12px;color:var(--ink3)">
+        พื้นฐาน ${f(coreT)} + เพิ่มเติม ${f(elecT)} หน่วยกิต
+      </td><td></td>
+    </tr>`;
+}
+
+/* ══ ACTIVITY step1 ══ */
+function renderActStep1(){
+  const tbody=document.getElementById('ab1');
+  tbody.innerHTML='';
+  ACTS.forEach(act=>{
+    const note=act.maxPerYear?`<div class="anote">รวมทั้งปีต้องไม่เกิน ${act.maxPerYear} ชม.</div>`:'';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div class="an">${act.name}</div>${note}</td>
+      <td style="text-align:center">
+        <input type="number" id="a1_${act.id}" min="0" max="999" value="0" oninput="updA1TotalRow()">
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+function updA1TotalRow(){
+  const sum=ACTS.reduce((a,act)=>a+(parseFloat(document.getElementById('a1_'+act.id)?.value)||0),0);
+  set('a1Sum',sum);
+}
+
+/* ══ ACTIVITY expand ══ */
+function expandActivities(){
+  const tbody=document.getElementById('abBig');
+  tbody.innerHTML='';
+  ACTS.forEach(act=>{
+    const initVal=parseFloat(document.getElementById('a1_'+act.id)?.value)||0;
+    const note=act.maxPerYear?`<div class="anote" style="font-size:11px;color:var(--ink3)">≤${act.maxPerYear}ชม./ปี</div>`:'';
+    const cells=[0,1,2,3,4,5].map(si=>`
+      <td><input type="number" id="ab_${act.id}_${si}" min="0" max="999" value="${initVal}" oninput="updActBigFoot()"></td>`
+    ).join('');
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td><div class="an">${act.name}</div>${note}</td>
+      ${cells}
+      <td class="at-rowtot" id="ab_${act.id}_tot">${f(initVal*6)}</td>`;
+    tbody.appendChild(tr);
+    updActRowTot(act.id);
+  });
+  updActBigFoot();
+  document.getElementById('actExpanded').classList.add('show');
+}
+
+function updActRowTot(actId){
+  let sum=0;
+  for(let i=0;i<6;i++) sum+=parseFloat(document.getElementById(`ab_${actId}_${i}`)?.value)||0;
+  const el=document.getElementById(`ab_${actId}_tot`);
+  if(el) el.textContent=f(sum);
+  updActBigFoot();
+}
+
+function updActBigFoot(){
+  const semSums=[0,1,2,3,4,5].map(si=>
+    ACTS.reduce((a,act)=>a+(parseFloat(document.getElementById(`ab_${act.id}_${si}`)?.value)||0),0)
+  );
+  const grandSum=semSums.reduce((a,v)=>a+v,0);
+  const tfoot=document.getElementById('abBigFoot');
+  tfoot.innerHTML=`
+    <tr>
+      <td class="left" style="font-weight:700">รวมทุกกิจกรรม</td>
+      ${semSums.map(h=>{
+        const ok=h===60;
+        return `<td style="font-weight:700;color:${ok?'var(--green)':'var(--red)'}">${h}</td>`;
+      }).join('')}
+      <td style="font-weight:700">${grandSum}</td>
+    </tr>
+    <tr>
+      <td class="left" style="font-weight:400;color:var(--ink3);font-size:12px">เกณฑ์ (ต้องได้ = 60 ชม./ภาคพอดี)</td>
+      ${semSums.map(h=>{
+        const ok=h===60;
+        return `<td style="font-weight:700;font-size:13px;color:${ok?'var(--green)':'var(--red)'}">${ok?'✓':'✗'}</td>`;
+      }).join('')}
+      <td style="font-weight:700;font-size:12px;color:${grandSum===360?'var(--green)':'var(--red)'}">
+        ${grandSum===360?'✓':grandSum+'/360'}
+      </td>
+    </tr>`;
+}
+
+function getActVal(actId,semIdx){
+  return parseFloat(document.getElementById(`ab_${actId}_${semIdx}`)?.value)||0;
+}
+
+/* ══ RUN CHECK ══ */
+function runCheck(){
+  const bigRows=[...document.querySelectorAll('#sbBig tr')];
+  if(!bigRows.length){ alert('กรุณากดปุ่ม "สร้างตารางทั้ง 6 ภาคเรียน" ในส่วนรายวิชาก่อน'); return; }
+  const actBigRows=[...document.querySelectorAll('#abBig tr')];
+  if(!actBigRows.length){ alert('กรุณากดปุ่ม "สร้างตารางทั้ง 6 ภาคเรียน" ในส่วนกิจกรรมด้วย'); return; }
+
+  const subjs=bigRows.map(tr=>{
+    const name=tr.querySelector('td')?.textContent?.trim()||'';
+    const type=tr.dataset.type||'core';
+    const sems=[0,1,2,3,4,5].map(i=>parseFloat(document.getElementById(tr.id+'_s'+i)?.value)||0);
+    const total=sems.reduce((a,v)=>a+v,0);
+    return{name,type,sems,total,y1:sems[0]+sems[1],y2:sems[2]+sems[3],y3:sems[4]+sems[5]};
+  });
+
+  const coreT=subjs.filter(s=>s.type==='core').reduce((a,s)=>a+s.total,0);
+  const elecT=subjs.filter(s=>s.type==='elective').reduce((a,s)=>a+s.total,0);
+  const grandT=coreT+elecT;
+  const coreP=coreT===66, elecP=elecT===15, totalP=grandT===81;
+
+  const semH=[0,1,2,3,4,5].map(si=>
+    ACTS.reduce((a,act)=>a+getActVal(act.id,si),0)
+  );
+  const allSemsP=semH.every(h=>h===60);
+
+  const socialYr=[
+    getActVal('social',0)+getActVal('social',1),
+    getActVal('social',2)+getActVal('social',3),
+    getActVal('social',4)+getActVal('social',5),
+  ];
+  const socialP=socialYr.every(yt=>yt<=15);
+  const actP=allSemsP&&socialP;
+  const overallP=coreP&&elecP&&totalP&&actP;
+
+  const actSumm=ACTS.map(act=>({
+    ...act,
+    yearTotals:[
+      getActVal(act.id,0)+getActVal(act.id,1),
+      getActVal(act.id,2)+getActVal(act.id,3),
+      getActVal(act.id,4)+getActVal(act.id,5),
+    ],
+    grandTotal:[0,1,2,3,4,5].reduce((a,i)=>a+getActVal(act.id,i),0),
+  }));
+
+  const issues=[];
+  if(!coreP)  issues.push(`หน่วยกิตพื้นฐาน ${f(coreT)} หน่วยกิต — ต้องได้ 66 พอดี (${coreT<66?'ขาด':'เกิน'} ${f(Math.abs(coreT-66))} หน่วยกิต)`);
+  if(!elecP)  issues.push(`หน่วยกิตเพิ่มเติม ${f(elecT)} หน่วยกิต — ต้องได้ 15 พอดี (${elecT<15?'ขาด':'เกิน'} ${f(Math.abs(elecT-15))} หน่วยกิต)`);
+  if(!totalP) issues.push(`หน่วยกิตรวม ${f(grandT)} หน่วยกิต — ต้องได้ 81 พอดี (${grandT<81?'ขาด':'เกิน'} ${f(Math.abs(grandT-81))} หน่วยกิต)`);
+  semH.forEach((h,i)=>{
+    if(h!==60) issues.push(`กิจกรรมรวม ${SEM_LABELS[i]} = ${h} ชม. — ต้องได้ 60 ชม.พอดี (${h<60?'ขาด':'เกิน'} ${Math.abs(h-60)} ชม.)`);
+  });
+  socialYr.forEach((yt,i)=>{
+    if(yt>15) issues.push(`กิจกรรมเพื่อสังคมฯ ม.${i+1} = ${yt} ชม. — ต้องไม่เกิน 15 ชม./ปี (เกิน ${yt-15} ชม.)`);
+  });
+
+  render({subjs,coreT,elecT,grandT,coreP,elecP,totalP,actP,allSemsP,socialP,socialYr,actSumm,semH,overallP,issues});
+}
+
+/* ══ RENDER ══ */
+function render(d){
+  // overall
+  const ov=document.getElementById('overall');
+  ov.className='overall '+(d.overallP?'pass':'fail');
+  const ovT=document.getElementById('ovT'), ovS=document.getElementById('ovS');
+  ovT.textContent=d.overallP?'✓ ผ่านเกณฑ์ทุกด้าน':'✗ ไม่ผ่านเกณฑ์บางด้าน';
+  ovT.className='ov-t '+(d.overallP?'pass':'fail');
+  ovS.textContent=d.overallP?'หน่วยกิตและกิจกรรมครบตามที่กำหนด':'มีบางด้านที่ยังไม่ผ่านเกณฑ์ ดูรายละเอียดด้านล่าง';
+  ovS.className='ov-s '+(d.overallP?'pass':'fail');
+  set('ovEmoji', d.overallP?'🎉':'⚠️');
+
+  // summary cards
+  set('sg',[
+    {l:'หน่วยกิตรวม',   v:f(d.grandT), r:'ต้องได้ 81 พอดี', p:d.totalP},
+    {l:'วิชาพื้นฐาน',   v:f(d.coreT),  r:'ต้องได้ 66 พอดี', p:d.coreP},
+    {l:'วิชาเพิ่มเติม',  v:f(d.elecT),  r:'ต้องได้ 15 พอดี', p:d.elecP},
+    {l:'กิจกรรม/ภาค',   v:d.actP?'ครบ':'ไม่ครบ', r:'60 ชม./ภาคพอดี · สังคมฯ ≤ 15/ปี', p:d.actP},
+  ].map(c=>`<div class="sc ${c.p?'pass':'fail'}">
+    <div class="cl">${c.l}</div>
+    <div class="cv ${c.p?'pass':'fail'}">${c.v}</div>
+    <div class="cr">${c.r}</div>
+    <div class="cs ${c.p?'pass':'fail'}">${c.p?'✓ ผ่าน':'✗ ไม่ผ่าน'}</div>
+  </div>`).join(''));
+
+  // progress bars
+  set('pgBars',[
+    {l:'พื้นฐาน (ต้องได้ 66 พอดี)',  v:d.coreT,  m:66},
+    {l:'เพิ่มเติม (ต้องได้ 15 พอดี)', v:d.elecT,  m:15},
+    {l:'รวม (ต้องได้ 81 พอดี)',        v:d.grandT, m:81},
+  ].map(b=>{
+    const pct=Math.min(100,Math.round(b.v/b.m*100));
+    const cls=pct===100?'good':pct>=70?'warn':'bad';
+    return `<div class="pr">
+      <div class="pr-l">${b.l}</div>
+      <div class="pr-t"><div class="pr-f ${cls}" style="width:${pct}%"></div></div>
+      <div class="pr-v">${f(b.v)} / ${b.m}</div>
+    </div>`;
+  }).join(''));
+
+  // issues
+  set('ib',d.issues.length?`<div class="ib">
+    <h4>⚠️ พบปัญหา ${d.issues.length} รายการ</h4>
+    <ul>${d.issues.map(i=>`<li>${i}</li>`).join('')}</ul>
+  </div>`:'');
+
+  // subject result table
+  set('rtWrap',`<table class="rt">
+    <thead><tr>
+      <th>ชื่อวิชา</th><th>ประเภท</th>
+      <th class="r">ม.1</th><th class="r">ม.2</th><th class="r">ม.3</th><th class="r">รวม 3 ปี</th>
+    </tr></thead>
+    <tbody>${d.subjs.map(s=>`<tr>
+      <td>${s.name||'—'}</td>
+      <td><span class="pill ${s.type}">${s.type==='core'?'พื้นฐาน':'เพิ่มเติม'}</span></td>
+      <td class="r">${f(s.y1)}</td><td class="r">${f(s.y2)}</td><td class="r">${f(s.y3)}</td>
+      <td class="r" style="font-weight:700">${f(s.total)}</td>
+    </tr>`).join('')}</tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2" style="font-weight:700">รวมทั้งหมด</td>
+        <td class="r">${f(d.subjs.reduce((a,s)=>a+s.y1,0))}</td>
+        <td class="r">${f(d.subjs.reduce((a,s)=>a+s.y2,0))}</td>
+        <td class="r">${f(d.subjs.reduce((a,s)=>a+s.y3,0))}</td>
+        <td class="r" style="font-size:14px;font-weight:700">${f(d.grandT)}</td>
+      </tr>
+      <tr><td colspan="5" style="font-size:12px;color:var(--ink3);font-weight:400">
+        พื้นฐาน ${f(d.coreT)} + เพิ่มเติม ${f(d.elecT)} หน่วยกิต
+      </td><td></td></tr>
+    </tfoot>
+  </table>`);
+
+  // activity result — 3 ตารางรายปี
+  const YR_COLORS = [
+    { hd: 'linear-gradient(90deg,#0D7377,#14A5AB)', badge_pass:'#0D5C60', badge_fail:'#991B1B' },
+    { hd: 'linear-gradient(90deg,#7C3AED,#A855F7)', badge_pass:'#4C1D95', badge_fail:'#991B1B' },
+    { hd: 'linear-gradient(90deg,#0E9F6E,#34D399)', badge_pass:'#065F46', badge_fail:'#991B1B' },
+  ];
+
+  const actYearTables=[0,1,2].map(yi=>{
+    const s1=yi*2, s2=yi*2+1;
+    const totS1=d.actSumm.reduce((a,act)=>a+getActVal(act.id,s1),0);
+    const totS2=d.actSumm.reduce((a,act)=>a+getActVal(act.id,s2),0);
+    const totYr=totS1+totS2;
+    const s1ok=totS1===60, s2ok=totS2===60, yrok=totYr===120;
+
+    const rows=d.actSumm.map(act=>{
+      const h1=getActVal(act.id,s1), h2=getActVal(act.id,s2), hy=h1+h2;
+      const socialBad=act.maxPerYear&&hy>act.maxPerYear;
+      const rowColor=socialBad?'var(--red)':'var(--ink)';
+      const socialNote=act.maxPerYear
+        ?`<span style="font-size:11px;color:${socialBad?'var(--red)':'var(--ink3)'}"> (≤${act.maxPerYear}ชม./ปี)</span>`:'';
+      return `<tr style="border-bottom:1px solid var(--rule2);">
+        <td style="padding:9px 14px;font-size:13px;font-weight:500;color:${rowColor}">${act.name}${socialNote}</td>
+        <td style="text-align:center;padding:9px 14px;font-size:15px;font-weight:700;color:${rowColor}">${h1}</td>
+        <td style="text-align:center;padding:9px 14px;font-size:15px;font-weight:700;color:${rowColor}">${h2}</td>
+        <td style="text-align:center;padding:9px 14px;font-size:15px;font-weight:700;color:${socialBad?'var(--red)':'var(--ink2)'}">${hy}</td>
+      </tr>`;
+    }).join('');
+
+    const c1=s1ok?'var(--green)':'var(--red)';
+    const c2=s2ok?'var(--green)':'var(--red)';
+    const cy=yrok?'var(--green)':'var(--red)';
+    const yearPass=s1ok&&s2ok&&yrok&&d.actSumm.every(act=>!act.maxPerYear||(getActVal(act.id,s1)+getActVal(act.id,s2))<=act.maxPerYear);
+    const col=YR_COLORS[yi];
+
+    return `<div style="background:#fff;border-radius:14px;box-shadow:var(--sh2);overflow:hidden;margin-bottom:1rem;">
+      <div style="background:${col.hd};color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-family:'Noto Serif Thai',serif;font-weight:800;font-size:16px;">มัธยมศึกษาปีที่ ${yi+1}</span>
+        <span style="font-size:12px;font-weight:700;background:${yearPass?col.badge_pass:col.badge_fail};padding:4px 14px;border-radius:100px;box-shadow:0 1px 4px rgba(0,0,0,.2);">
+          ${yearPass?'✓ ผ่านเกณฑ์':'✗ ไม่ผ่านเกณฑ์'}
+        </span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:var(--paper2);border-bottom:1.5px solid var(--rule);">
+            <th style="text-align:left;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);min-width:200px;">กิจกรรม</th>
+            <th style="text-align:center;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);width:95px;">ภาคเรียน 1</th>
+            <th style="text-align:center;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);width:95px;">ภาคเรียน 2</th>
+            <th style="text-align:center;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);width:85px;">รวมปี</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="background:var(--paper2);border-top:2px solid var(--rule);">
+            <td style="padding:10px 14px;font-weight:700;font-size:14px;">รวมทุกกิจกรรม</td>
+            <td style="text-align:center;font-weight:800;font-size:18px;padding:10px 14px;color:${c1};">${totS1}</td>
+            <td style="text-align:center;font-weight:800;font-size:18px;padding:10px 14px;color:${c2};">${totS2}</td>
+            <td style="text-align:center;font-weight:800;font-size:18px;padding:10px 14px;color:${cy};">${totYr}</td>
+          </tr>
+          <tr style="background:var(--paper2);border-top:1px solid var(--rule2);">
+            <td style="padding:6px 14px;font-size:12px;color:var(--ink3);">เกณฑ์ (= 60 ชม./ภาค · 120 ชม./ปีพอดี)</td>
+            <td style="text-align:center;font-weight:700;font-size:14px;padding:6px 14px;color:${c1};">${s1ok?'✓':'✗'}</td>
+            <td style="text-align:center;font-weight:700;font-size:14px;padding:6px 14px;color:${c2};">${s2ok?'✓':'✗'}</td>
+            <td style="text-align:center;font-weight:700;font-size:14px;padding:6px 14px;color:${cy};">${yrok?'✓':'✗'}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+  }).join('');
+
+  set('arg', actYearTables);
+
+  document.getElementById('rs').classList.add('show');
+  swT('subjects',document.querySelector('.tb'));
+  setTimeout(()=>document.getElementById('rs').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+/* ══ HELPERS ══ */
+function f(n){ return (n%1===0)?n:parseFloat(n.toFixed(1)); }
+function set(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
+function swT(name,el){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  document.getElementById('panel-'+name)?.classList.add('active');
+}
+</script>
+</body>
+</html>
