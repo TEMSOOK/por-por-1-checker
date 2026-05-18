@@ -882,26 +882,24 @@ footer {
 
     <!-- API Key -->
     <div class="ai-key-row">
-      <label>🔑 Anthropic API Key</label>
+      <label for="aiApiKey">🔑 Anthropic API Key</label>
       <input type="password" class="ai-key-input" id="aiApiKey"
         placeholder="sk-ant-..." autocomplete="off">
     </div>
 
-    <!-- Hidden file input -->
+    <!-- File input + label (label triggers input natively — works in all browsers) -->
     <input type="file" id="aiFileInput" accept=".pdf,.jpg,.jpeg,.png"
-      style="display:none"
-      onchange="if(this.files[0]) handleAiFile(this.files[0])">
+      style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
+      onchange="aiOnFileChange(this)">
 
-    <!-- Upload zone -->
-    <div class="ai-upload-zone" id="aiUploadZone"
-      onclick="document.getElementById('aiFileInput').click()"
+    <label for="aiFileInput" class="ai-upload-zone" id="aiUploadZone"
       ondragover="event.preventDefault();this.classList.add('drag-over')"
       ondragleave="this.classList.remove('drag-over')"
-      ondrop="event.preventDefault();this.classList.remove('drag-over');if(event.dataTransfer.files[0])handleAiFile(event.dataTransfer.files[0])">
+      ondrop="event.preventDefault();this.classList.remove('drag-over');aiOnDrop(event)">
       <div class="uz-icon">📄</div>
       <div class="uz-title">คลิกเพื่อเลือกไฟล์ ปพ.1</div>
       <div class="uz-sub">PDF, JPG, PNG · หรือลากวางไฟล์ที่นี่</div>
-    </div>
+    </label>
 
     <!-- File preview -->
     <div class="ai-file-preview" id="aiFilePreview">
@@ -913,9 +911,8 @@ footer {
       <button type="button" class="fp-del" onclick="clearAiFile()">×</button>
     </div>
 
-    <!-- Read button -->
-    <button type="button" class="btn-ai-read" id="btnAiRead"
-      onclick="runAiRead()" disabled>
+    <!-- Read button (not disabled — checked in runAiRead) -->
+    <button type="button" class="btn-ai-read" id="btnAiRead" onclick="runAiRead()">
       ✨ ให้ AI อ่านและกรอกข้อมูล
     </button>
 
@@ -1619,6 +1616,18 @@ let aiFileType   = null;
 
 /* ── AI file handling ── */
 
+// เรียกจาก onchange ของ input
+function aiOnFileChange(input) {
+  if (input.files && input.files[0]) handleAiFile(input.files[0]);
+}
+
+// เรียกจาก ondrop ของ label
+function aiOnDrop(event) {
+  if (event.dataTransfer && event.dataTransfer.files[0]) {
+    handleAiFile(event.dataTransfer.files[0]);
+  }
+}
+
 function handleAiFile(file) {
   const allowed = ['application/pdf','image/jpeg','image/jpg','image/png'];
   if (!allowed.includes(file.type)) { showAiErr('รองรับเฉพาะ PDF, JPG, PNG เท่านั้น'); return; }
@@ -1627,15 +1636,24 @@ function handleAiFile(file) {
   document.getElementById('aiFSize').textContent = fmtSize(file.size);
   document.getElementById('aiUploadZone').style.display = 'none';
   document.getElementById('aiFilePreview').classList.add('show');
-  document.getElementById('btnAiRead').disabled = true; // รอ FileReader
+
+  // แสดงสถานะกำลังโหลด
+  const btn = document.getElementById('btnAiRead');
+  btn.textContent = '⏳ กำลังโหลดไฟล์...';
+  btn.style.opacity = '0.6';
 
   const reader = new FileReader();
   reader.onload = ev => {
     aiFileBase64 = ev.result.split(',')[1];
     aiFileType   = file.type;
-    document.getElementById('btnAiRead').disabled = false;
+    btn.innerHTML = '✨ ให้ AI อ่านและกรอกข้อมูล';
+    btn.style.opacity = '1';
   };
-  reader.onerror = () => showAiErr('อ่านไฟล์ไม่สำเร็จ กรุณาลองใหม่');
+  reader.onerror = () => {
+    showAiErr('อ่านไฟล์ไม่สำเร็จ กรุณาลองใหม่');
+    btn.innerHTML = '✨ ให้ AI อ่านและกรอกข้อมูล';
+    btn.style.opacity = '1';
+  };
   reader.readAsDataURL(file);
 }
 
@@ -1645,7 +1663,7 @@ function clearAiFile() {
   if (inp) inp.value = '';
   document.getElementById('aiFilePreview').classList.remove('show');
   document.getElementById('aiUploadZone').style.display = 'block';
-  document.getElementById('btnAiRead').disabled = true;
+  
   hideAiMsg();
 }
 
@@ -1656,11 +1674,23 @@ function fmtSize(b) {
 /* ── AI Read ── */
 async function runAiRead() {
   const apiKey = document.getElementById('aiApiKey').value.trim();
-  if (!apiKey) { showAiErr('กรุณากรอก API Key ก่อน'); return; }
-  if (!aiFileBase64) { showAiErr('กรุณาแนบไฟล์ก่อน'); return; }
+  if (!apiKey) { showAiErr('กรุณากรอก Anthropic API Key ก่อน'); return; }
+  if (!aiFileBase64) {
+    showAiErr('กรุณาเลือกไฟล์ ปพ.1 ก่อน (คลิกกล่องด้านบน)');
+    return;
+  }
 
   hideAiMsg();
-  document.getElementById('btnAiRead').disabled = true;
+  
+  const btn = document.getElementById('btnAiRead');
+  btn.innerHTML = '⏳ กำลังส่งให้ AI...';
+  btn.style.opacity = '0.6';
+
+  const restoreBtn = () => {
+    btn.innerHTML = '✨ ให้ AI อ่านและกรอกข้อมูล';
+    btn.style.opacity = '1';
+  };
+
   setAiProg(10, 'กำลังส่งเอกสารให้ AI อ่าน...');
 
   const systemPrompt = `คุณเป็นระบบอ่าน ปพ.1 (ระเบียนแสดงผลการเรียน) สำหรับนักเรียนมัธยมศึกษาไทย
@@ -1726,8 +1756,8 @@ async function runAiRead() {
     if (!resp.ok) {
       const e = await resp.json().catch(()=>({}));
       showAiErr('API Error: ' + (e.error?.message || `HTTP ${resp.status}`));
-      document.getElementById('btnAiRead').disabled = false;
-      hideAiProg(); return;
+      
+      hideAiProg(); restoreBtn(); return;
     }
 
     const data = await resp.json();
@@ -1738,14 +1768,14 @@ async function runAiRead() {
     try { parsed = JSON.parse(clean); }
     catch(e) {
       showAiErr('ไม่สามารถแปลผลจาก AI ได้ กรุณาลองใหม่');
-      document.getElementById('btnAiRead').disabled = false;
-      hideAiProg(); return;
+      
+      hideAiProg(); restoreBtn(); return;
     }
 
     if (parsed.error) {
       showAiErr('ไม่สามารถอ่านเอกสาร: ' + parsed.error);
-      document.getElementById('btnAiRead').disabled = false;
-      hideAiProg(); return;
+      
+      hideAiProg(); restoreBtn(); return;
     }
 
     setAiProg(85, 'กำลังกรอกข้อมูลลงตาราง...');
@@ -1753,17 +1783,17 @@ async function runAiRead() {
     setAiProg(100, 'เสร็จสิ้น!');
 
     setTimeout(() => {
-      hideAiProg();
+      hideAiProg(); restoreBtn();
       showAiSuccess('✓ AI กรอกข้อมูลเรียบร้อยแล้ว ตรวจสอบและแก้ไขได้ในตารางด้านล่าง');
-      document.getElementById('btnAiRead').disabled = false;
+      
       // scroll ไปที่ตาราง
       document.getElementById('subjExpanded').scrollIntoView({ behavior:'smooth', block:'start' });
     }, 600);
 
   } catch(err) {
     showAiErr('เกิดข้อผิดพลาด: ' + err.message);
-    document.getElementById('btnAiRead').disabled = false;
-    hideAiProg();
+    
+    hideAiProg(); restoreBtn();
   }
 }
 
