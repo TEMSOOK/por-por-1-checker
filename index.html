@@ -763,20 +763,8 @@ footer {
 
     <div class="expanded-section" id="subjExpanded">
       <div class="expanded-label">✏️ แก้ไขชื่อวิชา ประเภท และหน่วยกิตในแต่ละภาคเรียนได้อิสระ</div>
-      <div class="sw">
-        <table class="stbig">
-          <thead>
-            <tr>
-              <th class="left" style="min-width:200px">ชื่อวิชา</th>
-              <th class="left" style="width:110px">ประเภท</th>
-              <th style="width:95px;text-align:center">หน่วยกิต</th>
-              <th style="width:30px"></th>
-            </tr>
-          </thead>
-          <tbody id="sbBig"></tbody>
-          <tfoot id="sbBigFoot"></tfoot>
-        </table>
-      </div>
+      <div id="sbBig"></div>
+      <div id="sbBigFoot" style="background:var(--teal-pale);border-radius:0 0 var(--r) var(--r);padding:10px 14px;font-size:13px;color:var(--teal-dark);font-weight:700;border:1px solid var(--rule);border-top:2px solid var(--teal-light);"></div>
     </div>
   </div>
 
@@ -918,7 +906,6 @@ function updA1Sum(){}
    แต่ละกลุ่มมีแถวต่อวิชา พร้อม input ชื่อวิชาและหน่วยกิตที่แก้ได้อิสระ
 ══ */
 function expandSubjects(){
-  // อ่านรายชื่อวิชาจาก step1 เป็น template
   const template=[];
   document.querySelectorAll('#sb1 tr').forEach(tr=>{
     const ins=tr.querySelectorAll('input,select');
@@ -938,55 +925,60 @@ function expandSubjects(){
   ];
   const YR_BG=['#0D7377','#7C3AED','#0E9F6E'];
 
-  // สร้าง wrapper แยกตามภาคเรียน (ไม่ใช้ table เดียว เพื่อให้ add/del row ง่าย)
   const container=document.getElementById('sbBig');
   container.innerHTML='';
-
-  // ใช้ <tbody> เป็น container หลัก แต่เปลี่ยนเป็น div แทน table tbody
-  // เราจะวาง mini-table ต่อภาคแทน
-  // หมายเหตุ: sbBig คือ tbody ของ stbig ซึ่งต้องการ tr เท่านั้น
-  // เปลี่ยน approach: วาง tr พิเศษที่ครอบ div ไม่ได้ → ใช้ colspan เต็มแทน
+  bigRowCounter=0;
 
   SEM_INFO.forEach((si,semIdx)=>{
     const yrBg=YR_BG[si.yr-1];
 
-    // ── แถวหัวภาคเรียน ──
-    const hdrTr=document.createElement('tr');
-    hdrTr.innerHTML=`
-      <td colspan="4" style="background:${yrBg};color:#fff;padding:0;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 14px;">
-          <span style="font-family:'Noto Serif Thai',serif;font-weight:700;font-size:13px;letter-spacing:.03em;">
-            ม.${si.yr} ภาคเรียนที่ ${si.sem}
-          </span>
-          <button type="button"
-            onclick="addBigRow(${semIdx},'${yrBg}')"
-            style="background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.5);
-                   color:#fff;border-radius:7px;padding:3px 12px;font-size:12px;font-weight:700;
-                   font-family:'Sarabun',sans-serif;cursor:pointer;">
-            + เพิ่มวิชา
-          </button>
-        </div>
-      </td>`;
-    container.appendChild(hdrTr);
+    // wrapper div ต่อภาค
+    const wrap=document.createElement('div');
+    wrap.style.cssText='margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid var(--rule);';
 
-    // ── แถวต่อวิชา (template) ──
-    template.forEach((row)=>{
-      container.appendChild(makeBigRow(semIdx, row.name, row.type, row.credits));
+    // หัวภาค
+    const hdr=document.createElement('div');
+    hdr.style.cssText=`background:${yrBg};color:#fff;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;`;
+    hdr.innerHTML=`
+      <span style="font-family:'Noto Serif Thai',serif;font-weight:700;font-size:13px;">
+        ม.${si.yr} ภาคเรียนที่ ${si.sem}
+      </span>
+      <button type="button" onclick="addBigRow(${semIdx},'${yrBg}')"
+        style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);
+               color:#fff;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;
+               font-family:'Sarabun',sans-serif;cursor:pointer;">+ เพิ่มวิชา</button>`;
+    wrap.appendChild(hdr);
+
+    // mini table
+    const tbl=document.createElement('table');
+    tbl.style.cssText='width:100%;border-collapse:collapse;font-size:13px;background:#fff;';
+    tbl.innerHTML=`<thead>
+      <tr style="background:var(--paper2);">
+        <th style="text-align:left;padding:7px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);border-bottom:1.5px solid var(--rule);">ชื่อวิชา</th>
+        <th style="text-align:left;padding:7px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);border-bottom:1.5px solid var(--rule);width:110px;">ประเภท</th>
+        <th style="text-align:center;padding:7px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);border-bottom:1.5px solid var(--rule);width:95px;">หน่วยกิต</th>
+        <th style="border-bottom:1.5px solid var(--rule);width:30px;"></th>
+      </tr>
+    </thead>`;
+    const tbody=document.createElement('tbody');
+    tbody.id=`semtbody_${semIdx}`;
+    tbl.appendChild(tbody);
+
+    // แถวรวม
+    const tfoot=document.createElement('tfoot');
+    tfoot.innerHTML=`<tr style="background:var(--teal-pale);">
+      <td colspan="2" style="padding:7px 10px;font-size:12px;color:var(--ink3);">รวมภาคเรียนนี้</td>
+      <td style="padding:7px 10px;text-align:center;font-weight:700;font-size:14px;color:var(--teal-dark);" id="semsum_${semIdx}_val">0</td>
+      <td></td>
+    </tr>`;
+    tbl.appendChild(tfoot);
+    wrap.appendChild(tbl);
+    container.appendChild(wrap);
+
+    // กรอกวิชาจาก template
+    template.forEach(row=>{
+      tbody.appendChild(makeBigRow(semIdx, row.name, row.type, row.credits));
     });
-
-    // ── แถวผลรวมภาคเรียน ──
-    const sumTr=document.createElement('tr');
-    sumTr.id=`semsum_${semIdx}`;
-    sumTr.innerHTML=`
-      <td colspan="2" style="padding:7px 12px;font-size:12px;color:var(--ink3);
-               background:var(--paper2);border-top:1px solid var(--rule2);">
-        รวมภาคเรียนนี้
-      </td>
-      <td style="padding:7px 12px;text-align:center;font-weight:700;font-size:14px;
-               color:var(--teal-dark);background:var(--paper2);
-               border-top:1px solid var(--rule2);" id="semsum_${semIdx}_val">0</td>
-      <td style="background:var(--paper2);border-top:1px solid var(--rule2);"></td>`;
-    container.appendChild(sumTr);
   });
 
   updBigFoot();
@@ -1048,11 +1040,10 @@ function tr_setType(id){
 
 /* เพิ่มแถววิชาในภาคที่ต้องการ */
 function addBigRow(semIdx, yrBg){
+  const tbody=document.getElementById(`semtbody_${semIdx}`);
+  if(!tbody){ alert('ตารางไม่พร้อม'); return; }
   const newRow=makeBigRow(semIdx,'','core',0);
-  // หา sumTr ของภาคนี้แล้วแทรกก่อน
-  const sumTr=document.getElementById(`semsum_${semIdx}`);
-  sumTr.parentNode.insertBefore(newRow, sumTr);
-  // focus ที่ช่องชื่อวิชา
+  tbody.appendChild(newRow);
   const firstInput=newRow.querySelector('input[type=text]');
   if(firstInput) setTimeout(()=>firstInput.focus(),50);
   updBigFoot();
@@ -1066,35 +1057,21 @@ function delBigRow(id){
 }
 
 function updBigFoot(){
-  // อัปเดตยอดรวมแต่ละภาค
+  let coreT=0, elecT=0;
   [0,1,2,3,4,5].forEach(si=>{
-    const semRows=[...document.querySelectorAll(`#sbBig tr[data-sem="${si}"]`)];
-    const semTot=semRows.reduce((a,tr)=>a+(parseFloat(document.getElementById(tr.id+'_cr')?.value)||0),0);
+    const rows=[...document.querySelectorAll(`#semtbody_${si} tr`)];
+    const semTot=rows.reduce((a,tr)=>a+(parseFloat(document.getElementById(tr.id+'_cr')?.value)||0),0);
     const valEl=document.getElementById(`semsum_${si}_val`);
     if(valEl) valEl.textContent=f(semTot);
-  });
-
-  // รวมพื้นฐาน/เพิ่มเติม ตลอด 6 ภาค
-  let coreT=0, elecT=0;
-  document.querySelectorAll('#sbBig tr[data-sem]').forEach(tr=>{
-    const cr=parseFloat(document.getElementById(tr.id+'_cr')?.value)||0;
-    const tp=document.getElementById(tr.id+'_type')?.value||tr.dataset.type||'core';
-    tr.dataset.type=tp;
-    if(tp==='core') coreT+=cr; else elecT+=cr;
+    rows.forEach(tr=>{
+      const cr=parseFloat(document.getElementById(tr.id+'_cr')?.value)||0;
+      const tp=document.getElementById(tr.id+'_type')?.value||'core';
+      if(tp==='core') coreT+=cr; else elecT+=cr;
+    });
   });
   const grandTot=coreT+elecT;
-
-  const tfoot=document.getElementById('sbBigFoot');
-  tfoot.innerHTML=`
-    <tr class="tfoot-big">
-      <td class="left" colspan="3" style="font-size:13px">รวมหน่วยกิตทั้งหมด (6 ภาค)</td>
-      <td style="font-size:16px;font-weight:800;color:var(--teal-dark)" colspan="2">${f(grandTot)}</td>
-    </tr>
-    <tr class="tfoot-big">
-      <td class="left" colspan="4" style="font-weight:400;font-size:12px;color:var(--ink3)">
-        พื้นฐาน ${f(coreT)} + เพิ่มเติม ${f(elecT)} หน่วยกิต
-      </td><td></td>
-    </tr>`;
+  const foot=document.getElementById('sbBigFoot');
+  if(foot) foot.innerHTML=`รวมทั้งหมด: <strong>${f(grandTot)}</strong> หน่วยกิต &nbsp;|&nbsp; พื้นฐาน ${f(coreT)} + เพิ่มเติม ${f(elecT)}`;
 }
 
 /* ══ ACTIVITY step1 ══ */
@@ -1180,23 +1157,14 @@ function getActVal(actId,semIdx){
 
 /* ══ RUN CHECK ══ */
 function runCheck(){
-  const bigRows=[...document.querySelectorAll('#sbBig tr[data-sem]')];
-  if(!bigRows.length){ alert('กรุณากดปุ่ม "สร้างตารางทั้ง 6 ภาคเรียน" ในส่วนรายวิชาก่อน'); return; }
+  if(!document.getElementById('semtbody_0')){ alert('กรุณากดปุ่ม "สร้างตารางทั้ง 6 ภาคเรียน" ในส่วนรายวิชาก่อน'); return; }
   const actBigRows=[...document.querySelectorAll('#abBig tr')];
   if(!actBigRows.length){ alert('กรุณากดปุ่ม "สร้างตารางทั้ง 6 ภาคเรียน" ในส่วนกิจกรรมด้วย'); return; }
 
-  // อ่านรายวิชาจากโครงสร้างใหม่: data-sem แยกต่างหากต่อภาค
-  // รวมหน่วยกิตทั้งหมดจากทุกแถว (ทุก sem) รวมกัน
-  const subjRows=[...document.querySelectorAll('#sbBig tr[data-sem]')];
-
-  // สร้าง subjs สำหรับแสดงผล: group by (name, type) across all sems
-  // แต่สำหรับการตรวจสอบ เอาค่ารวมหน่วยกิตทุกแถวมาบวมกันเลย
   let coreT=0, elecT=0;
-  const subjsForDisplay=[]; // สำหรับแสดงตารางผล แยกตามภาค
-
-  // รวมแต่ละภาค
+  const subjsForDisplay=[];
   [0,1,2,3,4,5].forEach(si=>{
-    const semRows=[...document.querySelectorAll(`#sbBig tr[data-sem="${si}"]`)];
+    const semRows=[...document.querySelectorAll(`#semtbody_${si} tr`)];
     semRows.forEach(tr=>{
       const cr=parseFloat(document.getElementById(tr.id+'_cr')?.value)||0;
       const tp=document.getElementById(tr.id+'_type')?.value||tr.dataset.type||'core';
