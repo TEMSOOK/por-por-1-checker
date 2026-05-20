@@ -4,1382 +4,1451 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ระบบตรวจสอบ ปพ.1</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@400;500;600;700;800&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Thai:wght@700;800&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  /* แพลตฟอร์มหลัก */
-  --teal:       #0D7377;
-  --teal-dark:  #09565A;
-  --teal-light: #14A5AB;
-  --teal-pale:  #E0F4F5;
-  --gold:       #E8A020;
-  --gold-light: #FFF3D6;
-  --gold-dark:  #B87B0A;
+  --teal:#0D7377;--td:#09565A;--tl:#14A5AB;--tp:#E0F4F5;
+  --orange:#C2410C;--od:#9A3412;--ol:#EA580C;--op:#FFF7ED;
+  --green:#15803D;--gbg:#DCFCE7;--gbd:#86EFAC;
+  --red:#B91C1C;--rbg:#FEE2E2;--rbd:#FCA5A5;
+  --amber:#92400E;--abg:#FEF3C7;
+  --blue:#1D4ED8;--bbg:#DBEAFE;
+  --purple:#6D28D9;--pbg:#EDE9FE;
+  --ink:#1A2B2C;--ink2:#334E52;--ink3:#5E7E82;--ink4:#9AB4B7;
+  --bg:#F0F8F8;--sur:#fff;--sur2:#EEF6F7;
+  --bdr:#C5DCDE;--bdr2:#DDF0F1;
+  --r:8px;--rl:14px;
+  --sh:0 1px 4px rgba(13,115,119,.1),0 0 0 1px rgba(13,115,119,.06);
+  /* active theme vars (overridden by JS) */
+  --ac:var(--teal);--acd:var(--td);--acl:var(--tl);--acp:var(--tp);
+}
+html{font-size:15px;scroll-behavior:smooth;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.65;}
 
-  /* สีผล */
-  --green:      #15803D;
-  --gbg:        #DCFCE7;
-  --gbd:        #86EFAC;
-  --red:        #B91C1C;
-  --rbg:        #FEE2E2;
-  --rbd:        #FCA5A5;
+/* ── TOPBAR ── */
+.bar{background:linear-gradient(90deg,var(--acd),var(--ac),var(--acl));
+  padding:0 1.5rem;position:sticky;top:0;z-index:100;box-shadow:0 3px 10px rgba(0,0,0,.2);
+  transition:background .3s;}
+.bar-in{max-width:980px;margin:0 auto;height:54px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Noto Serif Thai',serif;
+  font-weight:700;font-size:15px;color:#fff;text-decoration:none;}
+.logo-box{width:32px;height:32px;background:rgba(255,255,255,.2);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;}
+.tag{font-size:11px;font-weight:600;background:rgba(255,255,255,.15);
+  border:1px solid rgba(255,255,255,.25);border-radius:100px;padding:3px 12px;color:rgba(255,255,255,.9);}
 
-  /* neutral */
-  --ink:        #1A2B2C;
-  --ink2:       #334E52;
-  --ink3:       #5E7E82;
-  --ink4:       #9AB4B7;
-  --paper:      #F7FAFA;
-  --paper2:     #EEF6F7;
-  --paper3:     #D9ECEE;
-  --rule:       #C5DCDE;
-  --rule2:      #DDF0F1;
+/* ── LEVEL SELECTOR ── */
+.level-wrap{background:linear-gradient(135deg,var(--acd),var(--ac));padding:2rem 1.5rem 3.5rem;text-align:center;transition:background .3s;}
+.level-title{font-family:'Noto Serif Thai',serif;font-size:26px;font-weight:800;color:#fff;
+  margin-bottom:8px;text-shadow:0 2px 8px rgba(0,0,0,.2);}
+.level-sub{font-size:13px;color:rgba(255,255,255,.75);margin-bottom:1.5rem;}
+.level-btns{display:inline-flex;gap:10px;background:rgba(255,255,255,.15);
+  border-radius:100px;padding:5px;}
+.level-btn{font-family:'Sarabun',sans-serif;font-size:15px;font-weight:700;
+  padding:10px 28px;border:none;border-radius:100px;cursor:pointer;
+  transition:all .2s;}
+.level-btn.inactive{background:transparent;color:rgba(255,255,255,.7);}
+.level-btn.inactive:hover{background:rgba(255,255,255,.15);color:#fff;}
+.level-btn.active{background:#fff;color:var(--acd);}
 
-  /* pill colors */
-  --blue:       #1D4ED8;
-  --bbg:        #DBEAFE;
-  --amber:      #92400E;
-  --abg:        #FEF3C7;
+/* ── CRIT CARDS ── */
+.crit-wrap{max-width:980px;margin:0 auto;padding:0 1.5rem;transform:translateY(-28px);}
+.crit-grid{display:grid;gap:10px;}
+.cc{background:var(--sur);border-radius:var(--r);box-shadow:0 4px 16px rgba(13,115,119,.12);
+  padding:12px 14px;border-top:4px solid var(--ac);}
+.cc:nth-child(2){border-top-color:#E8A020;}
+.cc:nth-child(3){border-top-color:#7C3AED;}
+.cc:nth-child(4){border-top-color:#0E9F6E;}
+.cc:nth-child(5){border-top-color:#DB2777;}
+.cc-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:4px;}
+.cc-val{font-family:'Noto Serif Thai',serif;font-size:22px;font-weight:800;color:var(--ac);line-height:1;}
+.cc:nth-child(2) .cc-val{color:#B87B0A;}
+.cc:nth-child(3) .cc-val{color:#7C3AED;}
+.cc:nth-child(4) .cc-val{color:#0E9F6E;}
+.cc:nth-child(5) .cc-val{color:#DB2777;}
+.cc-unit{font-size:11px;color:var(--ink3);margin-top:3px;}
 
-  --r:  10px;
-  --rlg: 16px;
-  --sh:  0 2px 8px rgba(13,115,119,.10), 0 0 0 1px rgba(13,115,119,.06);
-  --sh2: 0 4px 20px rgba(13,115,119,.14);
-}
+/* ── MAIN ── */
+.main{max-width:980px;margin:0 auto;padding:0 1.5rem 4rem;}
+.sec-hd{font-family:'Noto Serif Thai',serif;font-size:17px;font-weight:700;
+  color:var(--acd);margin-bottom:.9rem;display:flex;align-items:center;gap:10px;}
+.sec-icon{width:32px;height:32px;background:var(--acp);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;}
+.card{background:var(--sur);border-radius:var(--rl);box-shadow:var(--sh);
+  padding:1.5rem;margin-bottom:1.5rem;border:1px solid rgba(13,115,119,.07);}
+.hint{font-size:13px;background:var(--abg);border:1px solid #FCD34D;border-left:4px solid #E8A020;
+  border-radius:var(--r);padding:11px 14px;margin-bottom:1rem;line-height:1.75;color:#78350F;}
+.hint strong{color:#92400E;}
 
-html { font-size: 15px; scroll-behavior: smooth; }
-body {
-  font-family: 'Sarabun', sans-serif;
-  background: linear-gradient(160deg, #E8F5F6 0%, #F7FAFA 50%, #FFF8ED 100%);
-  background-attachment: fixed;
-  color: var(--ink);
-  min-height: 100vh;
-  line-height: 1.65;
-}
+/* ── TABS (sem for secondary) ── */
+.sem-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.sem-tab{font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;
+  padding:7px 14px;border:1.5px solid var(--bdr);border-radius:var(--r);
+  background:var(--sur);color:var(--ink3);cursor:pointer;transition:all .15s;}
+.sem-tab:hover{border-color:var(--ac);color:var(--ac);background:var(--acp);}
+.sem-tab.active{background:var(--ac);color:#fff;border-color:var(--ac);}
 
-/* ────────────────────────────────────────
-   TOPBAR
-──────────────────────────────────────── */
-.topbar {
-  background: linear-gradient(90deg, var(--teal-dark) 0%, var(--teal) 60%, var(--teal-light) 100%);
-  padding: 0 1.5rem;
-  position: sticky; top: 0; z-index: 200;
-  box-shadow: 0 3px 12px rgba(9,86,90,.35);
-}
-.topbar-inner {
-  max-width: 1060px; margin: 0 auto;
-  height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
-}
-.logo {
-  display: flex; align-items: center; gap: 12px;
-  font-family: 'Noto Serif Thai', serif;
-  font-weight: 700; font-size: 16px; color: #fff;
-  text-decoration: none; letter-spacing: .01em;
-}
-.logo-box {
-  width: 34px; height: 34px;
-  background: rgba(255,255,255,.2);
-  border: 1.5px solid rgba(255,255,255,.35);
-  border-radius: 9px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-}
-.topbar-tag {
-  font-size: 11px; font-weight: 600;
-  background: rgba(255,255,255,.18);
-  border: 1px solid rgba(255,255,255,.28);
-  border-radius: 100px;
-  padding: 4px 12px;
-  color: rgba(255,255,255,.9);
-  letter-spacing: .03em;
-}
+/* year tabs (primary) */
+.yr-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.yr-tab{font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;
+  padding:7px 16px;border:1.5px solid var(--bdr);border-radius:var(--r);
+  background:var(--sur);color:var(--ink3);cursor:pointer;transition:all .15s;}
+.yr-tab:hover{border-color:var(--orange);color:var(--orange);background:var(--op);}
+.yr-tab.active{background:var(--orange);color:#fff;border-color:var(--orange);}
 
-/* ────────────────────────────────────────
-   HERO BANNER
-──────────────────────────────────────── */
-.hero {
-  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 45%, #1A8E7A 100%);
-  padding: 2.5rem 1.5rem 3rem;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-.hero::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-}
-.hero-inner { position: relative; max-width: 1060px; margin: 0 auto; }
-.hero h1 {
-  font-family: 'Noto Serif Thai', serif;
-  font-size: 30px; font-weight: 800;
-  color: #fff; margin-bottom: 8px;
-  text-shadow: 0 2px 8px rgba(0,0,0,.2);
-}
-.hero p {
-  font-size: 14px; color: rgba(255,255,255,.8);
-  margin-bottom: 2rem;
-}
+/* ── INPUTS ── */
+.inp{width:100%;border:1.5px solid var(--bdr);border-radius:6px;padding:5px 8px;
+  font-size:13px;font-family:'Sarabun',sans-serif;background:#FAFEFE;
+  color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;}
+.inp:focus{border-color:var(--ac);box-shadow:0 0 0 3px rgba(13,115,119,.1);background:#fff;}
+.inp-n{text-align:center;}
+.sel{width:100%;border:1.5px solid var(--bdr);border-radius:6px;padding:5px 7px;
+  font-size:13px;font-family:'Sarabun',sans-serif;background:#FAFEFE;color:var(--ink);outline:none;}
+.sel:focus{border-color:var(--ac);}
+.btn-del{background:none;border:none;cursor:pointer;color:var(--ink4);
+  padding:3px 7px;border-radius:4px;font-size:16px;line-height:1;transition:color .15s,background .15s;}
+.btn-del:hover{color:var(--red);background:var(--rbg);}
+.btn-add{display:inline-flex;align-items:center;gap:6px;background:none;
+  border:1.5px dashed var(--bdr);border-radius:var(--r);padding:7px 14px;
+  font-size:13px;font-family:'Sarabun',sans-serif;color:var(--ink3);cursor:pointer;
+  transition:all .15s;margin-top:10px;}
+.btn-add:hover{border-color:var(--ac);color:var(--ac);background:var(--acp);}
+.btn-parse{display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,var(--ac),var(--acl));
+  color:#fff;border:none;border-radius:var(--r);padding:10px 20px;
+  font-size:14px;font-weight:600;font-family:'Sarabun',sans-serif;cursor:pointer;
+  box-shadow:0 3px 10px rgba(13,115,119,.28);transition:opacity .2s,transform .15s;margin-top:10px;}
+.btn-parse:hover{opacity:.9;transform:translateY(-1px);}
 
-/* ────────────────────────────────────────
-   CRITERIA STRIP  (overlapping hero)
-──────────────────────────────────────── */
-.crit-wrap {
-  max-width: 1060px; margin: 0 auto;
-  padding: 0 1.5rem;
-  transform: translateY(-28px);
-}
-.crit-strip {
-  display: grid;
-  grid-template-columns: repeat(4,1fr);
-  gap: 12px;
-}
-@media(max-width:640px){ .crit-strip{grid-template-columns:repeat(2,1fr);} }
+/* ── SEM BLOCK ── */
+.sem-block{margin-bottom:10px;border-radius:var(--r);overflow:hidden;border:1px solid var(--bdr);}
+.sem-hd{padding:9px 14px;color:#fff;font-family:'Noto Serif Thai',serif;
+  font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:space-between;}
+.sem-tbl{width:100%;border-collapse:collapse;font-size:13px;background:var(--sur);}
+.sem-tbl thead th{background:var(--sur2);font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);
+  padding:7px 10px;text-align:left;border-bottom:1.5px solid var(--bdr);}
+.sem-tbl thead th.c{text-align:center;}
+.sem-tbl thead th.r{text-align:right;}
+.sem-tbl tbody tr{border-bottom:1px solid var(--bdr2);}
+.sem-tbl tbody tr:hover{background:var(--acp);}
+.sem-tbl tbody td{padding:6px 10px;vertical-align:middle;}
+.sem-footer{background:var(--acp);padding:7px 12px;display:flex;align-items:center;
+  justify-content:space-between;font-size:12px;color:var(--ink3);}
+.sem-footer strong{font-size:14px;color:var(--acd);}
+.grand-bar{background:var(--acp);border:1px solid var(--bdr);border-radius:var(--r);
+  padding:12px 16px;margin-top:.5rem;font-size:14px;color:var(--acd);font-weight:600;}
 
-.cc {
-  background: #fff;
-  border-radius: var(--r);
-  box-shadow: var(--sh2);
-  padding: 14px 16px;
-  border-top: 4px solid var(--teal);
-  transition: transform .18s, box-shadow .18s;
-}
-.cc:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(13,115,119,.18); }
-.cc:nth-child(2) { border-top-color: var(--gold); }
-.cc:nth-child(3) { border-top-color: #7C3AED; }
-.cc:nth-child(4) { border-top-color: #0E9F6E; }
-.cc .lbl {
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .05em;
-  color: var(--ink3); margin-bottom: 5px;
-}
-.cc .val {
-  font-family: 'Noto Serif Thai', serif;
-  font-size: 28px; font-weight: 800; line-height: 1;
-  color: var(--teal);
-}
-.cc:nth-child(2) .val { color: var(--gold-dark); }
-.cc:nth-child(3) .val { color: #7C3AED; }
-.cc:nth-child(4) .val { color: #0E9F6E; }
-.cc .unit { font-size: 12px; color: var(--ink3); margin-top: 4px; }
+/* ── ACTIVITY ── */
+.act-grid{display:grid;gap:10px;}
+.act-yr{background:var(--sur);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;}
+.act-yr-hd{padding:9px 12px;color:#fff;font-family:'Noto Serif Thai',serif;font-weight:700;font-size:13px;}
+.act-tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.act-tbl thead th{background:var(--sur2);font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);
+  padding:7px 10px;text-align:left;border-bottom:1.5px solid var(--bdr);}
+.act-tbl thead th.c{text-align:center;}
+.act-tbl tbody tr{border-bottom:1px solid var(--bdr2);}
+.act-tbl tbody td{padding:7px 10px;vertical-align:middle;}
+.act-tbl tfoot tr{background:var(--acp);border-top:2px solid var(--bdr);}
+.act-tbl tfoot td{padding:7px 10px;font-weight:700;color:var(--acd);}
+.inp-act{width:68px;border:1.5px solid var(--bdr);border-radius:5px;padding:5px 6px;
+  font-size:13px;font-family:'Sarabun',sans-serif;text-align:center;
+  background:#FAFEFE;color:var(--ink);outline:none;transition:border-color .15s;}
+.inp-act:focus{border-color:var(--ac);background:#fff;}
 
-/* ────────────────────────────────────────
-   MAIN LAYOUT
-──────────────────────────────────────── */
-.main {
-  max-width: 1060px; margin: 0 auto;
-  padding: 0 1.5rem 4rem;
-}
+/* ── CHECK BUTTON ── */
+.btn-check{width:100%;padding:14px;font-size:16px;font-weight:700;
+  font-family:'Noto Serif Thai',serif;
+  background:linear-gradient(135deg,var(--acd),var(--ac),var(--acl));
+  color:#fff;border:none;border-radius:var(--rl);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);
+  transition:opacity .2s,transform .15s;margin-bottom:2rem;}
+.btn-check:hover{opacity:.9;transform:translateY(-2px);}
+.btn-check:active{transform:scale(.99);}
 
-/* ────────────────────────────────────────
-   SECTION TITLE
-──────────────────────────────────────── */
-.sec-title {
-  font-family: 'Noto Serif Thai', serif;
-  font-size: 17px; font-weight: 700;
-  margin-bottom: .9rem;
-  display: flex; align-items: center; gap: 10px;
-  color: var(--teal-dark);
-}
-.sec-title .icon {
-  width: 32px; height: 32px;
-  background: var(--teal-pale);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-}
+/* ── RESULT ── */
+.res{display:none;animation:fu .35s ease;}
+.res.show{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+.overall{border-radius:var(--rl);box-shadow:0 4px 16px rgba(0,0,0,.1);
+  padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.overall.pass{background:var(--gbg);border:1.5px solid var(--gbd);}
+.overall.fail{background:var(--rbg);border:1.5px solid var(--rbd);}
+.ov-t{font-family:'Noto Serif Thai',serif;font-size:20px;font-weight:800;}
+.ov-t.pass{color:#14532D;}
+.ov-t.fail{color:#7F1D1D;}
+.ov-s{font-size:13px;margin-top:3px;}
+.ov-s.pass{color:var(--green);}
+.ov-s.fail{color:var(--red);}
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:1.25rem;}
+.sc{background:var(--sur);border-radius:var(--r);box-shadow:var(--sh);
+  padding:13px 15px;border-top:4px solid transparent;}
+.sc.pass{border-top-color:#22C55E;}
+.sc.fail{border-top-color:#EF4444;}
+.sc-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:5px;}
+.sc-val{font-family:'Noto Serif Thai',serif;font-size:20px;font-weight:800;line-height:1;}
+.sc-val.pass{color:var(--green);}
+.sc-val.fail{color:var(--red);}
+.sc-req{font-size:12px;color:var(--ink3);margin-top:4px;}
+.sc-st{font-size:12px;font-weight:700;margin-top:4px;}
+.sc-st.pass{color:var(--green);}
+.sc-st.fail{color:var(--red);}
+.pg-card{background:var(--sur);border-radius:var(--rl);box-shadow:var(--sh);
+  padding:1.25rem 1.5rem;margin-bottom:1.25rem;}
+.pg-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ac);margin-bottom:14px;}
+.pr{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.pr:last-child{margin-bottom:0;}
+.pr-l{font-size:13px;color:var(--ink2);min-width:180px;}
+.pr-tr{flex:1;height:9px;background:var(--sur2);border-radius:4px;overflow:hidden;}
+.pr-f{height:100%;border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1);}
+.pr-f.g{background:linear-gradient(90deg,#22C55E,#4ADE80);}
+.pr-f.w{background:linear-gradient(90deg,#F59E0B,#FCD34D);}
+.pr-f.b{background:linear-gradient(90deg,#EF4444,#F87171);}
+.ib{background:var(--rbg);border:1px solid var(--rbd);border-left:4px solid var(--red);
+  border-radius:var(--r);padding:13px 16px;margin-bottom:1.25rem;}
+.ib h4{font-size:13px;font-weight:700;color:var(--red);margin-bottom:8px;}
+.ib li{font-size:13px;color:#9B1C1C;margin-bottom:4px;margin-left:16px;}
+.tabs{display:flex;gap:2px;border-bottom:2px solid var(--bdr2);margin-bottom:1.25rem;}
+.tb{font-family:'Sarabun',sans-serif;font-size:14px;font-weight:500;padding:9px 18px;
+  border:none;background:none;cursor:pointer;color:var(--ink3);
+  border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;
+  transition:color .15s;border-radius:6px 6px 0 0;}
+.tb:hover{color:var(--ac);background:var(--acp);}
+.tb.active{color:var(--acd);border-bottom-color:var(--ac);font-weight:700;background:var(--acp);}
+.tp{display:none;}
+.tp.active{display:block;}
+.res-wrap{background:var(--sur);border-radius:var(--rl);box-shadow:var(--sh);
+  overflow:hidden;overflow-x:auto;margin-bottom:1.25rem;}
+.rt{width:100%;border-collapse:collapse;font-size:13px;min-width:400px;}
+.rt thead th{background:var(--acp);font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.04em;color:var(--acd);
+  padding:10px 12px;text-align:left;border-bottom:2px solid var(--bdr);}
+.rt thead th.r{text-align:right;}
+.rt tbody tr{border-bottom:1px solid var(--bdr2);}
+.rt tbody tr:hover{background:var(--acp);}
+.rt tbody td{padding:9px 12px;}
+.rt tfoot td{padding:10px 12px;font-weight:700;background:var(--acp);border-top:2px solid var(--bdr);color:var(--acd);}
+.rv{text-align:right;font-weight:600;}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:100px;}
+.pill.core{background:var(--bbg);color:var(--blue);}
+.pill.elective{background:var(--abg);color:var(--amber);}
+.pill.history{background:var(--pbg);color:var(--purple);}
+.btn-print{display:inline-flex;align-items:center;gap:6px;background:none;
+  border:1.5px solid var(--bdr);border-radius:var(--r);padding:8px 16px;
+  font-size:13px;font-family:'Sarabun',sans-serif;color:var(--ink2);cursor:pointer;
+  transition:all .15s;margin-bottom:1.5rem;}
+.btn-print:hover{border-color:var(--ac);color:var(--ac);background:var(--acp);}
+.print-header{display:none;}
+footer{text-align:center;padding:2rem 1.5rem;font-size:12px;color:var(--ink4);
+  border-top:1px solid var(--bdr2);margin-top:2rem;}
 
-/* ────────────────────────────────────────
-   CARD
-──────────────────────────────────────── */
-.card {
-  background: #fff;
-  border-radius: var(--rlg);
-  box-shadow: var(--sh);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid rgba(13,115,119,.08);
-}
+/* ── ORANGE THEME (primary) ── */
+body.primary{--bg:#FFF8F0;--sur2:#FFF3E8;--bdr:#F9C89E;--bdr2:#FDE4C8;--acp:var(--op);}
 
-/* ────────────────────────────────────────
-   HINT BOX
-──────────────────────────────────────── */
-.hint {
-  font-size: 13px;
-  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
-  border: 1px solid #FCD34D;
-  border-left: 4px solid var(--gold);
-  border-radius: var(--r);
-  padding: 12px 14px;
-  margin-bottom: 1.1rem;
-  line-height: 1.8;
-  color: #78350F;
-}
-.hint strong { color: #92400E; }
-
-.step-label {
-  font-size: 12px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .06em;
-  color: var(--teal);
-  margin-bottom: .6rem;
-  display: flex; align-items: center; gap: 6px;
-}
-.step-label::before {
-  content: '';
-  display: inline-block; width: 18px; height: 3px;
-  background: var(--teal); border-radius: 2px;
-}
-
-/* ────────────────────────────────────────
-   SUBJECT INPUT TABLE (step 1)
-──────────────────────────────────────── */
-.sw { overflow-x: auto; }
-.st1 {
-  width: 100%; border-collapse: collapse;
-  font-size: 13px; min-width: 460px;
-}
-.st1 thead th {
-  background: linear-gradient(90deg, var(--teal-pale), #F0FAF5);
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .04em;
-  color: var(--teal-dark);
-  padding: 10px 10px; text-align: left;
-  border-bottom: 2px solid var(--teal-light);
-  white-space: nowrap;
-}
-.st1 thead th.r { text-align: right; }
-.st1 tbody tr { border-bottom: 1px solid var(--rule2); }
-.st1 tbody tr:hover { background: var(--teal-pale); }
-.st1 tbody td { padding: 6px 8px; vertical-align: middle; }
-.st1 input[type=text], .st1 input[type=number] {
-  width: 100%; border: 1.5px solid var(--rule);
-  border-radius: 7px; padding: 6px 9px;
-  font-size: 13px; font-family: 'Sarabun', sans-serif;
-  background: var(--paper); color: var(--ink);
-  outline: none; transition: border-color .15s, box-shadow .15s;
-}
-.st1 input[type=number] { text-align: center; }
-.st1 input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
-  background: #fff;
-}
-.st1 select {
-  width: 100%; border: 1.5px solid var(--rule);
-  border-radius: 7px; padding: 6px 8px;
-  font-size: 13px; font-family: 'Sarabun', sans-serif;
-  background: var(--paper); color: var(--ink); outline: none;
-  transition: border-color .15s;
-}
-.st1 select:focus { border-color: var(--teal); }
-
-/* ────────────────────────────────────────
-   BUTTONS
-──────────────────────────────────────── */
-.btn-del {
-  background: none; border: none; cursor: pointer;
-  color: var(--ink4); padding: 3px 7px;
-  border-radius: 5px; font-size: 16px; line-height: 1;
-  transition: color .15s, background .15s;
-}
-.btn-del:hover { color: var(--red); background: var(--rbg); }
-
-.btn-add {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: none;
-  border: 1.5px dashed var(--teal-light);
-  border-radius: var(--r);
-  padding: 8px 16px;
-  font-size: 13px; font-family: 'Sarabun', sans-serif;
-  color: var(--teal); cursor: pointer;
-  transition: border-color .15s, background .15s;
-  margin-top: 12px;
-}
-.btn-add:hover { border-color: var(--teal-dark); background: var(--teal-pale); }
-
-.btn-expand {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: linear-gradient(135deg, var(--teal), var(--teal-light));
-  color: #fff; border: none;
-  border-radius: var(--r);
-  padding: 10px 22px;
-  font-size: 14px; font-weight: 600;
-  font-family: 'Sarabun', sans-serif;
-  cursor: pointer;
-  box-shadow: 0 3px 10px rgba(13,115,119,.3);
-  transition: opacity .2s, transform .15s, box-shadow .2s;
-  margin-top: 12px;
-}
-.btn-expand:hover {
-  opacity: .92;
-  transform: translateY(-1px);
-  box-shadow: 0 5px 16px rgba(13,115,119,.38);
-}
-.btn-expand:active { transform: scale(.98); }
-
-/* ────────────────────────────────────────
-   EXPANDED SECTION
-──────────────────────────────────────── */
-.expanded-section { display: none; margin-top: 1.5rem; }
-.expanded-section.show { display: block; }
-.expanded-label {
-  font-size: 12px; font-weight: 700;
-  color: var(--teal);
-  margin-bottom: .75rem;
-  padding: 8px 12px;
-  background: var(--teal-pale);
-  border-radius: var(--r);
-  border-left: 3px solid var(--teal);
-}
-
-/* ────────────────────────────────────────
-   BIG SUBJECT TABLE (6 sems)
-──────────────────────────────────────── */
-.stbig {
-  width: 100%; border-collapse: collapse;
-  font-size: 13px; min-width: 780px;
-}
-.stbig thead th {
-  background: var(--paper2);
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .04em;
-  color: var(--ink3);
-  padding: 9px 10px; text-align: center;
-  border-bottom: 1.5px solid var(--rule);
-  white-space: nowrap;
-}
-.stbig thead th.left { text-align: left; }
-.stbig .yr-hd {
-  font-size: 11px; font-weight: 700;
-  text-align: center; padding: 6px 0;
-  letter-spacing: .04em; color: #fff;
-}
-.yr-hd-1 { background: linear-gradient(90deg,#0D7377,#14A5AB); }
-.yr-hd-2 { background: linear-gradient(90deg,#7C3AED,#A855F7); }
-.yr-hd-3 { background: linear-gradient(90deg,#0E9F6E,#34D399); }
-.stbig tbody tr { border-bottom: 1px solid var(--rule2); }
-.stbig tbody tr:hover { background: var(--teal-pale); }
-.stbig tbody td { padding: 6px 9px; vertical-align: middle; }
-.stbig input[type=number] {
-  width: 58px; border: 1.5px solid var(--rule);
-  border-radius: 6px; padding: 4px 6px;
-  font-size: 13px; font-family: 'Sarabun', sans-serif;
-  text-align: center; background: var(--paper);
-  color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s;
-}
-.stbig input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
-  background: #fff;
-}
-.cell-total { font-weight: 700; text-align: center; font-size: 13px; color: var(--teal-dark); }
-.tfoot-big td {
-  font-size: 13px; font-weight: 700;
-  background: var(--teal-pale);
-  border-top: 2px solid var(--teal-light);
-  padding: 9px 10px; text-align: center;
-  color: var(--teal-dark);
-}
-.tfoot-big td.left { text-align: left; }
-
-/* ────────────────────────────────────────
-   ACTIVITY step-1 TABLE
-──────────────────────────────────────── */
-.at1 { width: 100%; border-collapse: collapse; font-size: 13px; }
-.at1 thead th {
-  background: linear-gradient(90deg, var(--teal-pale), #F0FAF5);
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .04em;
-  color: var(--teal-dark); padding: 10px 12px;
-  text-align: left; border-bottom: 2px solid var(--teal-light);
-}
-.at1 thead th.r { text-align: center; }
-.at1 tbody tr { border-bottom: 1px solid var(--rule2); }
-.at1 tbody tr:hover { background: var(--teal-pale); }
-.at1 tbody td { padding: 10px 12px; vertical-align: middle; }
-.at1 input[type=number] {
-  width: 80px; border: 1.5px solid var(--rule);
-  border-radius: 7px; padding: 6px 8px;
-  font-size: 14px; font-family: 'Sarabun', sans-serif;
-  text-align: center; background: var(--paper);
-  color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s;
-}
-.at1 input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
-  background: #fff;
-}
-.an { font-weight: 600; font-size: 14px; color: var(--ink); }
-.anote { font-size: 11px; color: var(--ink3); margin-top: 3px; }
-
-/* activity sum tfoot row */
-.at1 tfoot tr {
-  background: var(--teal-pale);
-  border-top: 2px solid var(--teal-light);
-}
-.at1 tfoot td {
-  padding: 9px 12px;
-  font-weight: 700; font-size: 13px;
-  color: var(--teal-dark);
-  text-align: center;
-}
-.at1 tfoot td.left { text-align: left; }
-
-/* ────────────────────────────────────────
-   ACTIVITY BIG TABLE (6 sems)
-──────────────────────────────────────── */
-.atbig { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 680px; }
-.atbig thead th {
-  background: var(--paper2);
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .04em;
-  color: var(--ink3); padding: 9px 10px;
-  text-align: center; border-bottom: 1.5px solid var(--rule);
-  white-space: nowrap;
-}
-.atbig thead th.left { text-align: left; }
-.atbig tbody tr { border-bottom: 1px solid var(--rule2); }
-.atbig tbody tr:hover { background: var(--teal-pale); }
-.atbig tbody td { padding: 7px 10px; vertical-align: middle; }
-.atbig input[type=number] {
-  width: 62px; border: 1.5px solid var(--rule);
-  border-radius: 6px; padding: 4px 6px;
-  font-size: 13px; font-family: 'Sarabun', sans-serif;
-  text-align: center; background: var(--paper);
-  color: var(--ink); outline: none; transition: border-color .15s, box-shadow .15s;
-}
-.atbig input:focus {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px rgba(13,115,119,.12);
-  background: #fff;
-}
-.at-rowtot { font-weight: 700; text-align: center; font-size: 13px; color: var(--teal-dark); }
-.atbig tfoot td {
-  font-size: 13px; font-weight: 700;
-  background: var(--teal-pale);
-  border-top: 2px solid var(--teal-light);
-  padding: 8px 10px; text-align: center;
-  color: var(--teal-dark);
-}
-.atbig tfoot td.left { text-align: left; }
-
-/* ────────────────────────────────────────
-   CHECK BUTTON
-──────────────────────────────────────── */
-.btn-check {
-  width: 100%; padding: 16px;
-  font-size: 17px; font-weight: 700;
-  font-family: 'Noto Serif Thai', serif;
-  background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 50%, var(--teal-light) 100%);
-  color: #fff; border: none;
-  border-radius: var(--rlg);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center; gap: 10px;
-  box-shadow: 0 4px 18px rgba(13,115,119,.35);
-  transition: opacity .2s, transform .15s, box-shadow .2s;
-  margin-bottom: 2rem;
-  letter-spacing: .02em;
-}
-.btn-check:hover {
-  opacity: .94;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 28px rgba(13,115,119,.42);
-}
-.btn-check:active { transform: scale(.99); }
-
-/* ────────────────────────────────────────
-   RESULT SECTION
-──────────────────────────────────────── */
-.rs { display: none; animation: fu .4s ease; }
-.rs.show { display: block; }
-@keyframes fu { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:none;} }
-
-/* overall banner */
-.overall {
-  border-radius: var(--rlg);
-  box-shadow: var(--sh2);
-  padding: 1.5rem 1.75rem;
-  margin-bottom: 1.25rem;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 1rem; flex-wrap: wrap;
-}
-.overall.pass {
-  background: linear-gradient(135deg, #DCFCE7, #BBFFD3);
-  border: 1.5px solid var(--gbd);
-}
-.overall.fail {
-  background: linear-gradient(135deg, #FEE2E2, #FFCCCC);
-  border: 1.5px solid var(--rbd);
-}
-.ov-t {
-  font-family: 'Noto Serif Thai', serif;
-  font-size: 22px; font-weight: 800;
-}
-.ov-t.pass { color: #14532D; }
-.ov-t.fail { color: #7F1D1D; }
-.ov-s { font-size: 14px; margin-top: 4px; }
-.ov-s.pass { color: var(--green); }
-.ov-s.fail { color: var(--red); }
-.ov-emoji { font-size: 40px; }
-
-/* summary cards */
-.sg {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px,1fr));
-  gap: 12px; margin-bottom: 1.5rem;
-}
-.sc {
-  background: #fff;
-  border-radius: var(--r);
-  box-shadow: var(--sh);
-  padding: 14px 16px;
-  border-top: 4px solid transparent;
-  transition: transform .15s;
-}
-.sc:hover { transform: translateY(-2px); }
-.sc.pass { border-top-color: #22C55E; }
-.sc.fail { border-top-color: #EF4444; }
-.sc .cl {
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .05em;
-  color: var(--ink3); margin-bottom: 6px;
-}
-.sc .cv {
-  font-family: 'Noto Serif Thai', serif;
-  font-size: 26px; font-weight: 800; line-height: 1;
-}
-.sc .cv.pass { color: var(--green); }
-.sc .cv.fail { color: var(--red); }
-.sc .cr { font-size: 12px; color: var(--ink3); margin-top: 5px; }
-.sc .cs { font-size: 12px; font-weight: 700; margin-top: 5px; }
-.sc .cs.pass { color: var(--green); }
-.sc .cs.fail { color: var(--red); }
-
-/* progress bars */
-.pg {
-  background: #fff;
-  border-radius: var(--rlg);
-  box-shadow: var(--sh);
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1.25rem;
-}
-.pg-lbl {
-  font-size: 12px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .05em;
-  color: var(--teal); margin-bottom: 16px;
-}
-.pr { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.pr:last-child { margin-bottom: 0; }
-.pr-l { font-size: 13px; color: var(--ink2); min-width: 165px; }
-.pr-t {
-  flex: 1; height: 10px;
-  background: var(--paper3);
-  border-radius: 5px; overflow: hidden;
-}
-.pr-f {
-  height: 100%; border-radius: 5px;
-  transition: width .8s cubic-bezier(.4,0,.2,1);
-}
-.pr-f.good { background: linear-gradient(90deg, #22C55E, #4ADE80); }
-.pr-f.warn { background: linear-gradient(90deg, #F59E0B, #FCD34D); }
-.pr-f.bad  { background: linear-gradient(90deg, #EF4444, #F87171); }
-.pr-v { font-size: 13px; font-weight: 700; min-width: 70px; text-align: right; }
-
-/* issues box */
-.ib {
-  background: linear-gradient(135deg, #FEE2E2, #FFEDED);
-  border: 1px solid var(--rbd);
-  border-left: 4px solid var(--red);
-  border-radius: var(--r);
-  padding: 14px 16px; margin-bottom: 1.25rem;
-}
-.ib h4 { font-size: 13px; font-weight: 700; color: var(--red); margin-bottom: 10px; }
-.ib li { font-size: 13px; color: #9B1C1C; margin-bottom: 5px; margin-left: 18px; }
-
-/* tabs */
-.tabs {
-  display: flex; gap: 4px;
-  border-bottom: 2px solid var(--rule2);
-  margin-bottom: 1.25rem; overflow-x: auto;
-}
-.tb {
-  font-family: 'Sarabun', sans-serif;
-  font-size: 14px; font-weight: 500;
-  padding: 10px 20px; border: none; background: none;
-  cursor: pointer; color: var(--ink3);
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px; white-space: nowrap;
-  transition: color .15s; border-radius: 6px 6px 0 0;
-}
-.tb:hover { color: var(--teal); background: var(--teal-pale); }
-.tb.active { color: var(--teal-dark); border-bottom-color: var(--teal); font-weight: 700; background: var(--teal-pale); }
-.tp { display: none; }
-.tp.active { display: block; }
-
-/* result tables */
-.rw {
-  background: #fff; border-radius: var(--rlg);
-  box-shadow: var(--sh); overflow: hidden; overflow-x: auto;
-  margin-bottom: 1.25rem;
-}
-.rt { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 500px; }
-.rt thead th {
-  background: linear-gradient(90deg, var(--teal-pale), #F0FAF5);
-  font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: .04em;
-  color: var(--teal-dark); padding: 10px 12px;
-  text-align: left; border-bottom: 2px solid var(--teal-light);
-}
-.rt thead th.r { text-align: right; }
-.rt tbody tr { border-bottom: 1px solid var(--rule2); }
-.rt tbody tr:hover { background: var(--teal-pale); }
-.rt tbody td { padding: 9px 12px; }
-.rt tfoot td {
-  padding: 10px 12px; font-weight: 700;
-  background: var(--teal-pale);
-  border-top: 2px solid var(--teal-light);
-  color: var(--teal-dark);
-}
-.r { text-align: right; font-weight: 600; }
-.pill {
-  display: inline-block; font-size: 11px; font-weight: 700;
-  padding: 3px 10px; border-radius: 100px;
-}
-.pill.core    { background: var(--bbg); color: var(--blue); }
-.pill.elective { background: var(--abg); color: var(--amber); }
-
-/* activity result grid */
-.arg { margin-bottom: 1rem; }
-
-/* print button */
-.btn-print {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: none; border: 1.5px solid var(--teal-light);
-  border-radius: var(--r); padding: 8px 18px;
-  font-size: 13px; font-family: 'Sarabun', sans-serif;
-  color: var(--teal); cursor: pointer;
-  transition: border-color .15s, background .15s;
-  margin-bottom: 1.5rem;
-}
-.btn-print:hover { border-color: var(--teal-dark); background: var(--teal-pale); }
-
-/* footer */
-footer {
-  text-align: center; padding: 2rem 1.5rem;
-  font-size: 12px; color: var(--ink4);
-  border-top: 1px solid var(--rule2);
-  margin-top: 2rem;
-  background: rgba(255,255,255,.5);
-}
-
-@media print {
-  .topbar,.hero,.crit-wrap,.card,.sec-title,.btn-check,.btn-print,.tabs{display:none!important;}
-  .rs{display:block!important;} body{background:#fff;}
+/* ── PRINT ── */
+@media print{
+  .bar,.level-wrap,.crit-wrap,.main>.sec-hd,.main>.card,.btn-check,.btn-print,.tabs,footer{display:none!important;}
+  body{background:#fff;margin:0;padding:0;font-size:12pt;}
+  .main{padding:0;max-width:100%;}
+  .res{display:block!important;}
+  .print-header{display:block!important;text-align:center;padding:16px 0 12px;border-bottom:2px solid var(--ac);margin-bottom:16px;}
+  .print-header h2{font-family:'Noto Serif Thai',serif;font-size:18pt;font-weight:800;color:var(--acd);margin-bottom:4px;}
+  .print-header p{font-size:10pt;color:var(--ink3);}
+  .overall{box-shadow:none!important;border:1.5px solid #ccc;}
+  .sg{grid-template-columns:repeat(4,1fr);}
+  .sc{box-shadow:none!important;border:1px solid #ccc;}
+  .pg-card{box-shadow:none!important;border:1px solid #eee;}
+  .tabs{display:none!important;}
+  .tp{display:block!important;}
+  #panel-sub,#panel-act{display:block!important;margin-bottom:20px;}
+  .res-wrap{box-shadow:none!important;border:1px solid #ccc;overflow:visible;}
+  .rt{font-size:9pt;}
+  .rt thead th,.rt tfoot td{background:var(--acp)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  #resAct>div{box-shadow:none!important;border:1px solid #ccc;break-inside:avoid;margin-bottom:10px;}
+  .sc,.pg-card,.ib{break-inside:avoid;}
+  .pr-f{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
 </style>
 </head>
-<body>
+<body id="body">
 
-<!-- ══ TOPBAR ══ -->
-<header class="topbar">
-  <div class="topbar-inner">
-    <a href="#" class="logo">
-      <div class="logo-box">📋</div>
-      ระบบตรวจสอบ ปพ.1
-    </a>
-    <span class="topbar-tag">หลักสูตรแกนกลาง 2551</span>
+<!-- TOPBAR -->
+<header class="bar" id="topbar">
+  <div class="bar-in">
+    <a href="#" class="logo"><div class="logo-box" id="logoIcon">📋</div><span id="logoText">ระบบตรวจสอบ ปพ.1</span></a>
+    <span class="tag" id="topTag">หลักสูตรแกนกลาง 2551</span>
   </div>
 </header>
 
-<!-- ══ HERO ══ -->
-<div class="hero">
-  <div class="hero-inner">
-    <h1>ระบบตรวจสอบ ปพ.1</h1>
-    <p>กรอกข้อมูลรายวิชาและกิจกรรมพัฒนาผู้เรียน ระบบจะตรวจสอบตามเกณฑ์หลักสูตรแกนกลางให้ทันที</p>
+<!-- LEVEL SELECTOR + HERO -->
+<div class="level-wrap" id="levelWrap">
+  <div class="level-title" id="levelTitle">ระบบตรวจสอบ ปพ.1</div>
+  <div class="level-sub">เลือกระดับชั้นที่ต้องการตรวจสอบ</div>
+  <div class="level-btns">
+    <button type="button" class="level-btn inactive" id="btnPrimary" onclick="setLevel('primary')">🏫 ประถมศึกษา</button>
+    <button type="button" class="level-btn active"   id="btnSecondary" onclick="setLevel('secondary')">🎓 มัธยมศึกษา</button>
   </div>
 </div>
 
-<!-- ══ CRITERIA STRIP (overlaps hero) ══ -->
+<!-- CRIT CARDS -->
 <div class="crit-wrap">
-  <div class="crit-strip">
-    <div class="cc">
-      <div class="lbl">รวมหน่วยกิต</div>
-      <div class="val">81</div>
-      <div class="unit">หน่วยกิตพอดี</div>
-    </div>
-    <div class="cc">
-      <div class="lbl">วิชาพื้นฐาน</div>
-      <div class="val">66</div>
-      <div class="unit">หน่วยกิตพอดี</div>
-    </div>
-    <div class="cc">
-      <div class="lbl">วิชาเพิ่มเติม</div>
-      <div class="val">15</div>
-      <div class="unit">หน่วยกิตพอดี</div>
-    </div>
-    <div class="cc">
-      <div class="lbl">กิจกรรมรวม/ภาค</div>
-      <div class="val">60</div>
-      <div class="unit">ชม./ภาคพอดี</div>
-    </div>
-  </div>
+  <div class="crit-grid" id="critGrid"></div>
 </div>
 
-<!-- ══ MAIN ══ -->
 <main class="main">
 
-  <!-- ─── รายวิชา ─── -->
-  <div class="sec-title">
-    <div class="icon">📚</div>
-    รายวิชา
-  </div>
-  <div class="card">
-    <div class="hint">
-      <strong>ขั้นตอน:</strong> กรอกวิชาและหน่วยกิตของ <strong>ม.1 ภาคเรียนที่ 1</strong> ก่อน
-      แล้วกดปุ่ม <strong>"สร้างตารางทั้ง 6 ภาคเรียน"</strong> ระบบจะขยายตารางให้ครบทุกภาค
-      และสามารถแก้ไขหน่วยกิตแต่ละภาคได้ทันที
-    </div>
-    <div class="step-label">ม.1 ภาคเรียนที่ 1 — กรอกรายวิชาและหน่วยกิต</div>
-    <div class="sw">
-      <table class="st1">
-        <thead>
-          <tr>
-            <th style="width:28px">#</th>
-            <th style="min-width:180px">ชื่อวิชา</th>
-            <th style="width:110px">ประเภท</th>
-            <th class="r" style="width:85px">หน่วยกิต</th>
-            <th style="width:28px"></th>
-          </tr>
-        </thead>
-        <tbody id="sb1"></tbody>
-      </table>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <button type="button" class="btn-add" onclick="addS1()">+ เพิ่มวิชา</button>
-      <button type="button" class="btn-expand" onclick="expandSubjects()">↓ สร้างตารางทั้ง 6 ภาคเรียน</button>
-    </div>
+<!-- ═══ รายวิชา ═══ -->
+<div class="sec-hd"><div class="sec-icon">📚</div><span id="subjectTitle">รายวิชา</span></div>
+<div class="card" id="subjectCard">
+  <div class="hint" id="subjectHint"></div>
 
-    <div class="expanded-section" id="subjExpanded">
-      <div class="expanded-label">✏️ แก้ไขชื่อวิชา ประเภท และหน่วยกิตในแต่ละภาคเรียนได้อิสระ</div>
-      <div id="sbBig"></div>
-      <div id="sbBigFoot" style="background:var(--teal-pale);border-radius:0 0 var(--r) var(--r);padding:10px 14px;font-size:13px;color:var(--teal-dark);font-weight:700;border:1px solid var(--rule);border-top:2px solid var(--teal-light);"></div>
+  <!-- Secondary: sem tabs + paste -->
+  <div id="secSubject">
+    <div class="sem-tabs" id="semTabs"></div>
+    <div style="margin-bottom:6px">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ac);margin-bottom:6px" id="pasteLbl"></div>
+      <textarea id="pasteArea" rows="8"
+        placeholder="วางข้อความจาก ปพ.1 เช่น&#10;ท21101 ภาษาไทย 1.5&#10;ค21101 คณิตศาสตร์ 1.5"
+        style="width:100%;border:1.5px solid var(--bdr);border-radius:var(--r);padding:10px 12px;font-size:13px;font-family:'Sarabun',sans-serif;color:var(--ink);background:var(--sur2);outline:none;resize:vertical;line-height:1.7;transition:border-color .15s;"></textarea>
+      <button type="button" class="btn-parse" onclick="parseText()">→ แยกข้อมูลเข้าตาราง</button>
     </div>
+    <div id="semContainer" style="margin-top:1rem;"></div>
+    <div class="grand-bar" id="grandBar" style="display:none"></div>
   </div>
 
-  <!-- ─── กิจกรรม ─── -->
-  <div class="sec-title">
-    <div class="icon">🎯</div>
-    กิจกรรมพัฒนาผู้เรียน (ชั่วโมง)
+  <!-- Primary: year tabs + table -->
+  <div id="priSubject" style="display:none">
+    <div class="yr-tabs" id="yrTabs"></div>
+    <div style="margin-bottom:6px">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--orange);margin-bottom:6px" id="yrPasteLbl"></div>
+      <textarea id="yrPasteArea" rows="8"
+        placeholder="วางข้อความรายวิชา เช่น&#10;ภาษาไทย 200&#10;คณิตศาสตร์ 200&#10;วิทยาศาสตร์ 80"
+        style="width:100%;border:1.5px solid var(--bdr);border-radius:var(--r);padding:10px 12px;font-size:13px;font-family:'Sarabun',sans-serif;color:var(--ink);background:var(--sur2);outline:none;resize:vertical;line-height:1.7;transition:border-color .15s;"></textarea>
+      <button type="button" class="btn-parse" onclick="yrParseText()" style="background:linear-gradient(135deg,var(--od),var(--orange),var(--ol));">→ แยกข้อมูลเข้าตาราง</button>
+    </div>
+    <div id="yrContainer" style="margin-top:1rem;"></div>
+    <div class="grand-bar" id="yrGrandBar" style="display:none;border-color:#FBB27A;color:var(--od);background:var(--op);"></div>
   </div>
-  <div class="card">
-    <div class="hint">
-      <strong>เกณฑ์:</strong>
-      รวมทุกกิจกรรม ต้องได้ <strong>60 ชม./ภาคเรียนพอดี</strong> (= 120 ชม./ปี) |
-      กิจกรรมเพื่อสังคมฯ รวมทั้งปีต้อง <strong>ไม่เกิน 15 ชม./ปี</strong><br>
-      <strong>ขั้นตอน:</strong> กรอกชั่วโมงสำหรับ <strong>ภาคเรียนที่ 1</strong> แล้วกด <strong>"สร้างตารางทั้ง 6 ภาคเรียน"</strong>
-    </div>
-    <div class="step-label">ภาคเรียนที่ 1 — กรอกชั่วโมงกิจกรรม</div>
-    <div class="sw">
-      <table class="at1">
-        <thead>
-          <tr>
-            <th style="min-width:220px">กิจกรรม</th>
-            <th class="r" style="width:140px">ชั่วโมง / ภาค</th>
-          </tr>
-        </thead>
-        <tbody id="ab1"></tbody>
-        <tfoot>
-          <tr>
-            <td class="left" style="font-size:13px">รวมทุกกิจกรรม</td>
-            <td id="a1Sum" style="font-size:15px">0</td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-    <button type="button" class="btn-expand" onclick="expandActivities()">↓ สร้างตารางทั้ง 6 ภาคเรียน</button>
+</div>
 
-    <div class="expanded-section" id="actExpanded">
-      <div class="expanded-label">✏️ แก้ไขชั่วโมงแต่ละภาคเรียนได้ในช่องด้านล่าง</div>
-      <div class="sw">
-        <table class="atbig">
-          <thead>
-            <tr>
-              <th class="left" style="min-width:195px">กิจกรรม</th>
-              <th>ม.1 ภาค 1</th><th>ม.1 ภาค 2</th>
-              <th>ม.2 ภาค 1</th><th>ม.2 ภาค 2</th>
-              <th>ม.3 ภาค 1</th><th>ม.3 ภาค 2</th>
-              <th>รวม</th>
-            </tr>
-          </thead>
-          <tbody id="abBig"></tbody>
-          <tfoot id="abBigFoot"></tfoot>
-        </table>
-      </div>
-    </div>
+<!-- ═══ กิจกรรม ═══ -->
+<div class="sec-hd"><div class="sec-icon">🎯</div>กิจกรรมพัฒนาผู้เรียน</div>
+<div class="card">
+  <div class="hint" id="actHint"></div>
+  <!-- Secondary activity grid -->
+  <div id="secAct"><div class="act-grid" id="actGrid" style="grid-template-columns:repeat(3,1fr);"></div></div>
+  <!-- Primary activity grid -->
+  <div id="priAct" style="display:none"><div id="priActGrid"></div></div>
+</div>
+
+<button type="button" class="btn-check" onclick="runCheck()">✓ ตรวจสอบและรายงานผล</button>
+
+<!-- ═══ ผล ═══ -->
+<div class="res" id="resSection">
+  <div class="print-header">
+    <h2 id="printTitle">รายงานผลการตรวจสอบ ปพ.1</h2>
+    <p>อ้างอิงหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พ.ศ. 2551</p>
   </div>
-
-  <!-- ─── ปุ่มตรวจสอบ ─── -->
-  <button type="button" class="btn-check" onclick="runCheck()">
-    ✓ ตรวจสอบและรายงานผล
-  </button>
-
-  <!-- ─── ผลลัพธ์ ─── -->
-  <div class="rs" id="rs">
-    <button type="button" class="btn-print" onclick="window.print()">🖨 พิมพ์รายงาน</button>
-
-    <div class="overall" id="overall">
-      <div>
-        <div class="ov-t" id="ovT">—</div>
-        <div class="ov-s" id="ovS">—</div>
-      </div>
-      <div class="ov-emoji" id="ovEmoji"></div>
-    </div>
-
-    <div class="sg" id="sg"></div>
-
-    <div class="pg">
-      <div class="pg-lbl">ความคืบหน้าหน่วยกิต</div>
-      <div id="pgBars"></div>
-    </div>
-
-    <div id="ib"></div>
-
-    <div class="tabs">
-      <button type="button" class="tb active" onclick="swT('subjects',this)">📖 รายวิชาทั้งหมด</button>
-      <button type="button" class="tb" onclick="swT('activities',this)">🎯 กิจกรรมพัฒนาผู้เรียน</button>
-    </div>
-    <div class="tp active" id="panel-subjects">
-      <div class="rw" id="rtWrap"></div>
-    </div>
-    <div class="tp" id="panel-activities">
-      <div class="arg" id="arg"></div>
-    </div>
+  <button type="button" class="btn-print" onclick="window.print()">🖨 พิมพ์รายงาน</button>
+  <div class="overall" id="overall"><div class="ov-t" id="ovT"></div><div class="ov-s" id="ovS"></div></div>
+  <div class="sg" id="sg"></div>
+  <div class="pg-card"><div class="pg-lbl" id="pgLbl">ความคืบหน้า</div><div id="pgBars"></div></div>
+  <div id="ibWrap"></div>
+  <div class="tabs">
+    <button type="button" class="tb active" onclick="swTab('sub',this)">📖 รายวิชา</button>
+    <button type="button" class="tb" onclick="swTab('act',this)">🎯 กิจกรรม</button>
+    <button type="button" class="tb" onclick="swTab('summary',this)">📊 สรุปหน่วยกิต</button>
   </div>
+  <div class="tp active" id="panel-sub"><div class="res-wrap" id="resTable"></div></div>
+  <div class="tp" id="panel-act"><div id="resAct"></div></div>
+  <div class="tp" id="panel-summary"><div class="res-wrap" id="resSummary"></div></div>
+</div>
 
 </main>
 <footer>ระบบตรวจสอบ ปพ.1 · อ้างอิงหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พ.ศ. 2551</footer>
 
 <script>
-/* ══════════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════
    CONFIG
-══════════════════════════════════════════════════════════════ */
-const ACTS = [
-  { id:'guidance', name:'แนะแนว' },
-  { id:'scouts',   name:'ลูกเสือ / เนตรนารี' },
-  { id:'club',     name:'ชุมนุม' },
-  { id:'social',   name:'กิจกรรมเพื่อสังคมและสาธารณประโยชน์', maxPerYear:15 },
-];
+═══════════════════════════════════════ */
 const SEM_LABELS = ['ม.1 ภาค 1','ม.1 ภาค 2','ม.2 ภาค 1','ม.2 ภาค 2','ม.3 ภาค 1','ม.3 ภาค 2'];
-let sc = 0;
+const SEM_COLORS = ['#0D7377','#147A7E','#7C3AED','#6D30D4','#0E9F6E','#0B8B5E'];
+const YR_LABELS  = ['ป.1','ป.2','ป.3','ป.4','ป.5','ป.6'];
+const YR_COLORS  = ['#C2410C','#B45309','#7C3AED','#0E9F6E','#1D4ED8','#DB2777'];
 
-/* ══ INIT ══ */
+const SEC_ACTS = [
+  {id:'guidance',name:'แนะแนว'},
+  {id:'scouts',  name:'ลูกเสือ / เนตรนารี'},
+  {id:'club',    name:'ชุมนุม'},
+  {id:'social',  name:'กิจกรรมเพื่อสังคมและสาธารณประโยชน์',exactPerYear:15},
+];
+const PRI_ACTS = [
+  {id:'guidance',name:'แนะแนว'},
+  {id:'scouts',  name:'ลูกเสือ / เนตรนารี'},
+  {id:'club',    name:'ชุมนุม'},
+  {id:'social',  name:'กิจกรรมเพื่อสังคมและสาธารณประโยชน์', exactPerYear:10},
+];
+
+let level = 'secondary'; // 'secondary' | 'primary'
+let currentSem = 0;
+let currentYr  = 0;
+let rowCounter = 0;
+
+/* ═══════════════════════════════════════
+   INIT
+═══════════════════════════════════════ */
 window.addEventListener('DOMContentLoaded', () => {
-  for(let i=0;i<3;i++) addS1();
-  renderActStep1();
+  setLevel('secondary');
 });
 
-/* ══ SUBJECTS step1 ══ */
-function addS1(){
-  sc++;
-  const id='s1_'+sc;
-  const tr=document.createElement('tr');
-  tr.id=id;
-  tr.innerHTML=`
-    <td style="text-align:center;color:var(--ink4);font-size:12px">${sc}</td>
-    <td><input type="text" placeholder="เช่น ภาษาไทย" oninput="updA1Sum()"></td>
-    <td><select onchange="updA1Sum()">
-      <option value="core">พื้นฐาน</option>
-      <option value="elective">เพิ่มเติม</option>
+/* ═══════════════════════════════════════
+   SET LEVEL
+═══════════════════════════════════════ */
+function setLevel(lv) {
+  level = lv;
+  const isPri = lv === 'primary';
+
+  // theme
+  const root = document.documentElement;
+  if (isPri) {
+    root.style.setProperty('--ac',  '#C2410C');
+    root.style.setProperty('--acd', '#9A3412');
+    root.style.setProperty('--acl', '#EA580C');
+    root.style.setProperty('--acp', '#FFF7ED');
+    document.getElementById('body').classList.add('primary');
+  } else {
+    root.style.setProperty('--ac',  '#0D7377');
+    root.style.setProperty('--acd', '#09565A');
+    root.style.setProperty('--acl', '#14A5AB');
+    root.style.setProperty('--acp', '#E0F4F5');
+    document.getElementById('body').classList.remove('primary');
+  }
+
+  // level buttons
+  document.getElementById('btnPrimary').className   = 'level-btn ' + (isPri  ? 'active' : 'inactive');
+  document.getElementById('btnSecondary').className = 'level-btn ' + (!isPri ? 'active' : 'inactive');
+
+  // show/hide sections
+  document.getElementById('secSubject').style.display = isPri ? 'none' : 'block';
+  document.getElementById('priSubject').style.display = isPri ? 'block' : 'none';
+  document.getElementById('secAct').style.display     = isPri ? 'none' : 'block';
+  document.getElementById('priAct').style.display     = isPri ? 'block' : 'none';
+
+  // tags & titles
+  document.getElementById('topTag').textContent     = isPri ? 'ระดับประถมศึกษา' : 'ระดับมัธยมศึกษา';
+  document.getElementById('printTitle').textContent = isPri ? 'รายงานผลการตรวจสอบ ปพ.1 (ประถมศึกษา)' : 'รายงานผลการตรวจสอบ ปพ.1 (มัธยมศึกษา)';
+
+  // crit cards
+  buildCritCards(isPri);
+  // hints
+  buildHints(isPri);
+  // subject tables
+  if (isPri) buildPriSubject(); else buildSecSubject();
+  // activity grid
+  if (isPri) buildPriAct(); else buildSecAct();
+  // reset result
+  document.getElementById('resSection').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════
+   CRIT CARDS
+═══════════════════════════════════════ */
+function buildCritCards(isPri) {
+  const g = document.getElementById('critGrid');
+  if (isPri) {
+    g.style.gridTemplateColumns = 'repeat(4,1fr)';
+    g.innerHTML = `
+      <div class="cc"><div class="cc-lbl">พื้นฐาน/ปี</div><div class="cc-val">840</div><div class="cc-unit">ชม./ปีพอดี</div></div>
+      <div class="cc"><div class="cc-lbl">เพิ่มเติม/ปี</div><div class="cc-val">≥40</div><div class="cc-unit">ชม./ปี</div></div>
+      <div class="cc"><div class="cc-lbl">ประวัติศาสตร์/ปี</div><div class="cc-val">40</div><div class="cc-unit">ชม./ปีพอดี (รวมในพื้นฐาน)</div></div>
+      <div class="cc"><div class="cc-lbl">กิจกรรม/ปี</div><div class="cc-val">120</div><div class="cc-unit">ชม./ปีพอดี</div></div>`;
+  } else {
+    g.style.gridTemplateColumns = 'repeat(4,1fr)';
+    g.innerHTML = `
+      <div class="cc"><div class="cc-lbl">รวมหน่วยกิต</div><div class="cc-val">≥77</div><div class="cc-unit">หน่วยกิต</div></div>
+      <div class="cc"><div class="cc-lbl">วิชาพื้นฐาน</div><div class="cc-val">66</div><div class="cc-unit">หน่วยกิตพอดี</div></div>
+      <div class="cc"><div class="cc-lbl">วิชาเพิ่มเติม</div><div class="cc-val">≥11</div><div class="cc-unit">หน่วยกิต</div></div>
+      <div class="cc"><div class="cc-lbl">กิจกรรม/ภาค</div><div class="cc-val">60</div><div class="cc-unit">ชม./ภาคพอดี</div></div>`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   HINTS
+═══════════════════════════════════════ */
+function buildHints(isPri) {
+  const sh = document.getElementById('subjectHint');
+  const ah = document.getElementById('actHint');
+  if (isPri) {
+    sh.innerHTML = `<strong>วิธีใช้:</strong> เลือกปีที่ต้องการ → วางข้อความรายวิชา → กด <strong>"แยกข้อมูลเข้าตาราง"</strong><br>
+      รองรับรูปแบบ: <code>ภาษาไทย 200</code> หรือ <code>ภาษาไทย 200 พื้นฐาน</code> แต่ละวิชาขึ้นบรรทัดใหม่<br>
+      <strong>เกณฑ์:</strong> พื้นฐาน = 840 ชม./ปีพอดี | เพิ่มเติม ≥ 40 ชม./ปี | ประวัติศาสตร์ = 40 ชม./ปีพอดี (นับรวมในพื้นฐาน)`;
+    ah.innerHTML = `<strong>เกณฑ์:</strong> กิจกรรมพัฒนาผู้เรียนรวมทุกกิจกรรม = <strong>120 ชม./ปีพอดี</strong> | กิจกรรมเพื่อสังคมและสาธารณประโยชน์ = <strong>10 ชม./ปีพอดี</strong> (ไม่แยกภาคเรียน)`;
+  } else {
+    sh.innerHTML = `<strong>วิธีใช้:</strong> เลือกภาคเรียน → วางข้อความรายวิชา → กด <strong>"แยกข้อมูลเข้าตาราง"</strong><br>
+      รองรับรูปแบบ: <code>ท21101 ภาษาไทย 1.5</code> หรือ <code>ภาษาไทย 1.5</code> แต่ละวิชาขึ้นบรรทัดใหม่`;
+    ah.innerHTML = `<strong>เกณฑ์:</strong> รวมทุกกิจกรรม = <strong>60 ชม./ภาคพอดี</strong> |
+      กิจกรรมเพื่อสังคมและสาธารณประโยชน์ = <strong>15 ชม./ปีพอดี</strong>`;
+  }
+}
+
+/* ═══════════════════════════════════════
+   SECONDARY SUBJECT
+═══════════════════════════════════════ */
+function buildSecSubject() {
+  const tabs = document.getElementById('semTabs');
+  tabs.innerHTML = '';
+  SEM_LABELS.forEach((lbl, i) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'sem-tab' + (i===0?' active':'');
+    b.textContent = lbl; b.onclick = () => selectSem(i);
+    tabs.appendChild(b);
+  });
+  const cont = document.getElementById('semContainer');
+  cont.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const wrap = document.createElement('div');
+    wrap.id = `sem_wrap_${i}`; wrap.style.display = i===0?'block':'none';
+    wrap.className = 'sem-block';
+    wrap.innerHTML = `
+      <div class="sem-hd" style="background:${SEM_COLORS[i]}">
+        <span>${SEM_LABELS[i]}</span>
+        <button type="button" style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.45);color:#fff;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;" onclick="addSecRow(${i})">+ เพิ่มวิชา</button>
+      </div>
+      <table class="sem-tbl">
+        <thead><tr>
+          <th style="width:28px">#</th>
+          <th style="width:85px">รหัสวิชา</th>
+          <th style="min-width:160px">ชื่อวิชา</th>
+          <th style="width:110px">ประเภท</th>
+          <th class="r" style="width:80px">หน่วยกิต</th>
+          <th style="width:28px"></th>
+        </tr></thead>
+        <tbody id="tbody_${i}"></tbody>
+      </table>
+      <div class="sem-footer"><span>รวมภาคเรียนนี้</span><strong id="semtot_${i}">0 หน่วยกิต</strong></div>`;
+    cont.appendChild(wrap);
+  }
+  currentSem = 0;
+  document.getElementById('pasteLbl').textContent = `วางข้อความรายวิชา ${SEM_LABELS[0]}`;
+  document.getElementById('pasteArea').value = '';
+  document.getElementById('grandBar').style.display = 'none';
+}
+
+function selectSem(i) {
+  currentSem = i;
+  document.querySelectorAll('.sem-tab').forEach((t,j) => t.classList.toggle('active', j===i));
+  document.getElementById('pasteLbl').textContent = `วางข้อความรายวิชา ${SEM_LABELS[i]}`;
+  document.getElementById('pasteArea').value = '';
+  for (let j=0; j<6; j++) {
+    const w = document.getElementById(`sem_wrap_${j}`);
+    if (w) w.style.display = j===i ? 'block' : 'none';
+  }
+}
+
+function addSecRow(si, code='', name='', type='core', credits=0) {
+  rowCounter++;
+  const id = `sr_${si}_${rowCounter}`;
+  const tbody = document.getElementById(`tbody_${si}`);
+  const num = tbody.querySelectorAll('tr').length + 1;
+  const tr = document.createElement('tr');
+  tr.id = id;
+  tr.innerHTML = `
+    <td style="text-align:center;color:var(--ink4);font-size:12px">${num}</td>
+    <td><input type="text" class="inp" style="width:78px" value="${esc(code)}" placeholder="รหัส" oninput="updSecTotal()"></td>
+    <td><input type="text" class="inp" value="${esc(name)}" placeholder="ชื่อวิชา" oninput="updSecTotal()"></td>
+    <td><select class="sel" onchange="updSecTotal()">
+      <option value="core"     ${type==='core'    ?'selected':''}>พื้นฐาน</option>
+      <option value="elective" ${type==='elective'?'selected':''}>เพิ่มเติม</option>
     </select></td>
-    <td><input type="number" min="0" max="99" step="0.5" value="0" oninput="updA1Sum()"></td>
-    <td><button type="button" class="btn-del" onclick="delS1('${id}')">×</button></td>`;
-  document.getElementById('sb1').appendChild(tr);
-  updA1Sum();
+    <td><input type="number" class="inp inp-n" style="width:65px" min="0" max="99" step="0.5" value="${credits}" oninput="updSecTotal()"></td>
+    <td><button type="button" class="btn-del" onclick="document.getElementById('${id}').remove();updSecTotal()">×</button></td>`;
+  tbody.appendChild(tr);
+  updSecTotal();
 }
-function delS1(id){ document.getElementById(id)?.remove(); updA1Sum(); }
-function updA1Sum(){}
 
-/* ══ SUBJECTS expand ══
-   โครงสร้างใหม่: แสดงแยกตามภาคเรียน (6 กลุ่ม)
-   แต่ละกลุ่มมีแถวต่อวิชา พร้อม input ชื่อวิชาและหน่วยกิตที่แก้ได้อิสระ
-══ */
-function expandSubjects(){
-  const template=[];
-  document.querySelectorAll('#sb1 tr').forEach(tr=>{
-    const ins=tr.querySelectorAll('input,select');
-    if(!ins.length) return;
-    const name=(ins[0].value||'').trim();
-    const type=ins[1].value||'core';
-    const credits=parseFloat(ins[2].value)||0;
-    if(!name) return;
-    template.push({name,type,credits});
-  });
-  if(!template.length){ alert('กรุณากรอกชื่อวิชาอย่างน้อย 1 วิชาก่อน'); return; }
+function parseText() {
+  const raw = document.getElementById('pasteArea').value.trim();
+  if (!raw) { alert('กรุณาวางข้อความก่อน'); return; }
+  const parsed = parseSubjectLines(raw, 'secondary');
+  if (!parsed.length) { alert('ไม่พบข้อมูลรายวิชา'); return; }
+  document.getElementById(`tbody_${currentSem}`).innerHTML = '';
+  parsed.forEach(r => addSecRow(currentSem, r.code, r.name, r.type, r.credits));
+  updSecTotal();
+  document.getElementById('grandBar').style.display = 'block';
+  document.getElementById('pasteArea').value = '';
+  alert(`✓ เพิ่ม ${parsed.length} วิชาเข้า ${SEM_LABELS[currentSem]} แล้ว`);
+}
 
-  const SEM_INFO=[
-    {yr:1,sem:1},{yr:1,sem:2},
-    {yr:2,sem:1},{yr:2,sem:2},
-    {yr:3,sem:1},{yr:3,sem:2},
-  ];
-  const YR_BG=['#0D7377','#7C3AED','#0E9F6E'];
-
-  const container=document.getElementById('sbBig');
-  container.innerHTML='';
-  bigRowCounter=0;
-
-  SEM_INFO.forEach((si,semIdx)=>{
-    const yrBg=YR_BG[si.yr-1];
-
-    // wrapper div ต่อภาค
-    const wrap=document.createElement('div');
-    wrap.style.cssText='margin-bottom:8px;border-radius:8px;overflow:hidden;border:1px solid var(--rule);';
-
-    // หัวภาค
-    const hdr=document.createElement('div');
-    hdr.style.cssText=`background:${yrBg};color:#fff;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;`;
-    hdr.innerHTML=`
-      <span style="font-family:'Noto Serif Thai',serif;font-weight:700;font-size:13px;">
-        ม.${si.yr} ภาคเรียนที่ ${si.sem}
-      </span>
-      <button type="button" onclick="addBigRow(${semIdx},'${yrBg}')"
-        style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);
-               color:#fff;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;
-               font-family:'Sarabun',sans-serif;cursor:pointer;">+ เพิ่มวิชา</button>`;
-    wrap.appendChild(hdr);
-
-    // mini table
-    const tbl=document.createElement('table');
-    tbl.style.cssText='width:100%;border-collapse:collapse;font-size:13px;background:#fff;';
-    tbl.innerHTML=`<thead>
-      <tr style="background:var(--paper2);">
-        <th style="text-align:left;padding:7px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);border-bottom:1.5px solid var(--rule);">ชื่อวิชา</th>
-        <th style="text-align:left;padding:7px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);border-bottom:1.5px solid var(--rule);width:110px;">ประเภท</th>
-        <th style="text-align:center;padding:7px 10px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);border-bottom:1.5px solid var(--rule);width:95px;">หน่วยกิต</th>
-        <th style="border-bottom:1.5px solid var(--rule);width:30px;"></th>
-      </tr>
-    </thead>`;
-    const tbody=document.createElement('tbody');
-    tbody.id=`semtbody_${semIdx}`;
-    tbl.appendChild(tbody);
-
-    // แถวรวม
-    const tfoot=document.createElement('tfoot');
-    tfoot.innerHTML=`<tr style="background:var(--teal-pale);">
-      <td colspan="2" style="padding:7px 10px;font-size:12px;color:var(--ink3);">รวมภาคเรียนนี้</td>
-      <td style="padding:7px 10px;text-align:center;font-weight:700;font-size:14px;color:var(--teal-dark);" id="semsum_${semIdx}_val">0</td>
-      <td></td>
-    </tr>`;
-    tbl.appendChild(tfoot);
-    wrap.appendChild(tbl);
-    container.appendChild(wrap);
-
-    // กรอกวิชาจาก template
-    template.forEach(row=>{
-      tbody.appendChild(makeBigRow(semIdx, row.name, row.type, row.credits));
+function updSecTotal() {
+  let coreT=0, elecT=0;
+  for (let i=0; i<6; i++) {
+    let st=0;
+    document.querySelectorAll(`#tbody_${i} tr`).forEach(tr => {
+      const sels=tr.querySelectorAll('select'), inps=tr.querySelectorAll('input[type=number]');
+      if (!inps.length) return;
+      const cr=parseFloat(inps[0].value)||0, tp=sels[0]?.value||'core';
+      st+=cr; if(tp==='core') coreT+=cr; else elecT+=cr;
     });
-  });
-
-  updBigFoot();
-  document.getElementById('subjExpanded').classList.add('show');
+    const el=document.getElementById(`semtot_${i}`);
+    if(el) el.textContent=f(st)+' หน่วยกิต';
+  }
+  const grand=coreT+elecT;
+  const bar=document.getElementById('grandBar');
+  if(bar) bar.innerHTML=`รวมหน่วยกิตทั้งหมด (6 ภาค): <strong>${f(grand)}</strong> หน่วยกิต &nbsp;|&nbsp; พื้นฐาน <strong>${f(coreT)}</strong> + เพิ่มเติม <strong>${f(elecT)}</strong>`;
 }
 
-/* สร้างแถววิชาในตาราง 6 ภาค */
-let bigRowCounter=0;
-function makeBigRow(semIdx, name='', type='core', credits=0){
-  bigRowCounter++;
-  const id=`sbig_${semIdx}_${bigRowCounter}`;
+/* ═══════════════════════════════════════
+   PRIMARY SUBJECT
+═══════════════════════════════════════ */
+function buildPriSubject() {
+  const tabs = document.getElementById('yrTabs');
+  tabs.innerHTML = '';
+  YR_LABELS.forEach((lbl, i) => {
+    const b = document.createElement('button');
+    b.type='button'; b.className='yr-tab'+(i===0?' active':'');
+    b.textContent=lbl; b.onclick=()=>selectYr(i);
+    tabs.appendChild(b);
+  });
+  const cont = document.getElementById('yrContainer');
+  cont.innerHTML = '';
+  for (let i=0; i<6; i++) {
+    const wrap = document.createElement('div');
+    wrap.id=`yr_wrap_${i}`; wrap.style.display=i===0?'block':'none';
+    wrap.className='sem-block';
+    wrap.innerHTML=`
+      <div class="sem-hd" style="background:${YR_COLORS[i]}">
+        <span>${YR_LABELS[i]}</span>
+        <button type="button" style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.45);color:#fff;border-radius:6px;padding:3px 12px;font-size:12px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;" onclick="addPriRow(${i})">+ เพิ่มวิชา</button>
+      </div>
+      <table class="sem-tbl">
+        <thead><tr>
+          <th style="width:28px">#</th>
+          <th style="min-width:180px">ชื่อวิชา</th>
+          <th style="width:130px">ประเภท</th>
+          <th class="r" style="width:100px">ชั่วโมง/ปี</th>
+          <th style="width:28px"></th>
+        </tr></thead>
+        <tbody id="yrtbody_${i}"></tbody>
+      </table>
+      <div class="sem-footer"><span>รวมปีนี้ — พื้นฐาน: <strong id="yrtot_core_${i}">0</strong> ชม. | เพิ่มเติม: <strong id="yrtot_elec_${i}">0</strong> ชม. | ประวัติศาสตร์: <strong id="yrtot_hist_${i}">0</strong> ชม.</span></div>`;
+    cont.appendChild(wrap);
+  }
+  currentYr=0;
+  document.getElementById('yrPasteLbl').textContent=`วางข้อความรายวิชา ${YR_LABELS[0]}`;
+  document.getElementById('yrPasteArea').value='';
+  document.getElementById('yrGrandBar').style.display='none';
+}
+
+function selectYr(i) {
+  currentYr=i;
+  document.querySelectorAll('.yr-tab').forEach((t,j)=>t.classList.toggle('active',j===i));
+  document.getElementById('yrPasteLbl').textContent=`วางข้อความรายวิชา ${YR_LABELS[i]}`;
+  document.getElementById('yrPasteArea').value='';
+  for(let j=0;j<6;j++){
+    const w=document.getElementById(`yr_wrap_${j}`);
+    if(w) w.style.display=j===i?'block':'none';
+  }
+}
+
+function addPriRow(yi, name='', type='core', hours=0) {
+  rowCounter++;
+  const id=`pr_${yi}_${rowCounter}`;
+  const tbody=document.getElementById(`yrtbody_${yi}`);
+  const num=tbody.querySelectorAll('tr').length+1;
   const tr=document.createElement('tr');
   tr.id=id;
-  tr.dataset.sem=semIdx;
-  tr.dataset.type=type;
-  const inputStyle=`border:1.5px solid var(--rule);border-radius:6px;
-    padding:5px 8px;font-size:13px;font-family:'Sarabun',sans-serif;
-    background:var(--paper);color:var(--ink);outline:none;width:100%;
-    transition:border-color .15s,box-shadow .15s;`;
   tr.innerHTML=`
-    <td style="padding:5px 8px;">
-      <input type="text" id="${id}_name" value="${name}" placeholder="ชื่อวิชา"
-        style="${inputStyle}" oninput="updBigFoot()">
-    </td>
-    <td style="padding:5px 8px;width:108px">
-      <select id="${id}_type" onchange="tr_setType('${id}');updBigFoot()"
-        style="${inputStyle}padding:5px 7px;">
-        <option value="core"     ${type==='core'    ?'selected':''}>พื้นฐาน</option>
-        <option value="elective" ${type==='elective'?'selected':''}>เพิ่มเติม</option>
-      </select>
-    </td>
-    <td style="padding:5px 8px;width:90px;text-align:center">
-      <input type="number" id="${id}_cr" min="0" max="99" step="0.5" value="${credits}"
-        style="${inputStyle}width:72px;text-align:center;"
-        oninput="updBigFoot()">
-    </td>
-    <td style="padding:5px 8px;width:26px;text-align:center">
-      <button type="button"
-        onclick="delBigRow('${id}')"
-        style="background:none;border:none;cursor:pointer;color:var(--ink4);
-               font-size:16px;line-height:1;padding:2px 5px;border-radius:4px;
-               transition:color .15s,background .15s;"
-        onmouseover="this.style.color='var(--red)';this.style.background='var(--rbg)';"
-        onmouseout="this.style.color='var(--ink4)';this.style.background='none';">×</button>
-    </td>`;
-  // focus events
-  tr.querySelectorAll('input').forEach(inp=>{
-    inp.addEventListener('focus',()=>{ inp.style.borderColor='var(--teal)'; inp.style.boxShadow='0 0 0 3px rgba(13,115,119,.12)'; });
-    inp.addEventListener('blur', ()=>{ inp.style.borderColor='var(--rule)';  inp.style.boxShadow='none'; });
-  });
-  return tr;
+    <td style="text-align:center;color:var(--ink4);font-size:12px">${num}</td>
+    <td><input type="text" class="inp" value="${esc(name)}" placeholder="ชื่อวิชา" oninput="updPriTotal()"></td>
+    <td><select class="sel" onchange="updPriTotal()">
+      <option value="core"    ${type==='core'   ?'selected':''}>พื้นฐาน</option>
+      <option value="history" ${type==='history'?'selected':''}>ประวัติศาสตร์ (รวมในพื้นฐาน)</option>
+      <option value="elective"${type==='elective'?'selected':''}>เพิ่มเติม</option>
+    </select></td>
+    <td><input type="number" class="inp inp-n" style="width:75px" min="0" max="9999" step="1" value="${hours}" oninput="updPriTotal()"></td>
+    <td><button type="button" class="btn-del" onclick="document.getElementById('${id}').remove();updPriTotal()">×</button></td>`;
+  tbody.appendChild(tr);
+  updPriTotal();
 }
 
-function tr_setType(id){
-  const sel=document.getElementById(id+'_type');
-  const tr=document.getElementById(id);
-  if(sel&&tr) tr.dataset.type=sel.value;
+function yrParseText() {
+  const raw=document.getElementById('yrPasteArea').value.trim();
+  if(!raw){alert('กรุณาวางข้อความก่อน');return;}
+  const parsed=parseSubjectLines(raw,'primary');
+  if(!parsed.length){alert('ไม่พบข้อมูลรายวิชา');return;}
+  document.getElementById(`yrtbody_${currentYr}`).innerHTML='';
+  parsed.forEach(r=>addPriRow(currentYr,r.name,r.type,r.hours));
+  updPriTotal();
+  document.getElementById('yrGrandBar').style.display='block';
+  document.getElementById('yrPasteArea').value='';
+  alert(`✓ เพิ่ม ${parsed.length} วิชาเข้า ${YR_LABELS[currentYr]} แล้ว`);
 }
 
-/* เพิ่มแถววิชาในภาคที่ต้องการ */
-function addBigRow(semIdx, yrBg){
-  const tbody=document.getElementById(`semtbody_${semIdx}`);
-  if(!tbody){ alert('ตารางไม่พร้อม'); return; }
-  const newRow=makeBigRow(semIdx,'','core',0);
-  tbody.appendChild(newRow);
-  const firstInput=newRow.querySelector('input[type=text]');
-  if(firstInput) setTimeout(()=>firstInput.focus(),50);
-  updBigFoot();
-}
-
-/* ลบแถววิชา */
-function delBigRow(id){
-  const tr=document.getElementById(id);
-  if(tr) tr.remove();
-  updBigFoot();
-}
-
-function updBigFoot(){
-  let coreT=0, elecT=0;
-  [0,1,2,3,4,5].forEach(si=>{
-    const rows=[...document.querySelectorAll(`#semtbody_${si} tr`)];
-    const semTot=rows.reduce((a,tr)=>a+(parseFloat(document.getElementById(tr.id+'_cr')?.value)||0),0);
-    const valEl=document.getElementById(`semsum_${si}_val`);
-    if(valEl) valEl.textContent=f(semTot);
-    rows.forEach(tr=>{
-      const cr=parseFloat(document.getElementById(tr.id+'_cr')?.value)||0;
-      const tp=document.getElementById(tr.id+'_type')?.value||'core';
-      if(tp==='core') coreT+=cr; else elecT+=cr;
+function updPriTotal() {
+  let totalCore=0,totalElec=0,totalHist=0;
+  for(let i=0;i<6;i++){
+    let core=0,elec=0,hist=0;
+    document.querySelectorAll(`#yrtbody_${i} tr`).forEach(tr=>{
+      const sels=tr.querySelectorAll('select'),inps=tr.querySelectorAll('input[type=number]');
+      if(!inps.length)return;
+      const h=parseFloat(inps[0].value)||0,tp=sels[0]?.value||'core';
+      if(tp==='core')core+=h;
+      else if(tp==='history'){core+=h;hist+=h;}
+      else elec+=h;
     });
+    const ec=document.getElementById(`yrtot_core_${i}`);
+    const ee=document.getElementById(`yrtot_elec_${i}`);
+    const eh=document.getElementById(`yrtot_hist_${i}`);
+    if(ec)ec.textContent=f(core);
+    if(ee)ee.textContent=f(elec);
+    if(eh)eh.textContent=f(hist);
+    totalCore+=core;totalElec+=elec;totalHist+=hist;
+  }
+  const bar=document.getElementById('yrGrandBar');
+  if(bar) bar.innerHTML=`รวมทั้งหมด (6 ปี): พื้นฐาน <strong>${f(totalCore)}</strong> ชม. | เพิ่มเติม <strong>${f(totalElec)}</strong> ชม. | ประวัติศาสตร์ <strong>${f(totalHist)}</strong> ชม.`;
+}
+
+/* ═══════════════════════════════════════
+   PARSE TEXT (shared)
+═══════════════════════════════════════ */
+function parseSubjectLines(raw, lv) {
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l.length>0);
+  const result=[];
+  lines.forEach(line=>{
+    if(/^รายวิชา|^ปีการศึกษา|^ภาคเรียน/.test(line))return;
+    const numMatch=line.match(/(\d+\.?\d*)\s*$/);
+    if(!numMatch)return;
+    const val=parseFloat(numMatch[1]);
+    if(isNaN(val)||val<=0)return;
+    let rest=line.slice(0,line.lastIndexOf(numMatch[0])).trim();
+    let code='';
+    if(lv==='secondary'){
+      const cm=rest.match(/^([ก-๙a-zA-Z]{1,3}\d{4,6})\s*/);
+      if(cm){code=cm[1];rest=rest.slice(cm[0].length).trim();}
+    }
+    const name=rest.trim();
+    if(!name)return;
+    if(lv==='primary'){
+      // ตรวจจาก keyword
+      const isHist=/ประวัติศาสตร์/.test(name);
+      const isElec=/เพิ่มเติม/.test(name);
+      const cleanName=name.replace(/\s*(พื้นฐาน|เพิ่มเติม|ประวัติศาสตร์)\s*$/,'').trim();
+      result.push({name:cleanName||name,type:isHist?'history':isElec?'elective':'core',hours:val});
+    } else {
+      result.push({code,name,type:'core',credits:val});
+    }
   });
-  const grandTot=coreT+elecT;
-  const foot=document.getElementById('sbBigFoot');
-  if(foot) foot.innerHTML=`รวมทั้งหมด: <strong>${f(grandTot)}</strong> หน่วยกิต &nbsp;|&nbsp; พื้นฐาน ${f(coreT)} + เพิ่มเติม ${f(elecT)}`;
+  return result;
 }
 
-/* ══ ACTIVITY step1 ══ */
-function renderActStep1(){
-  const tbody=document.getElementById('ab1');
-  tbody.innerHTML='';
-  ACTS.forEach(act=>{
-    const note=act.maxPerYear?`<div class="anote">รวมทั้งปีต้องไม่เกิน ${act.maxPerYear} ชม.</div>`:'';
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td><div class="an">${act.name}</div>${note}</td>
-      <td style="text-align:center">
-        <input type="number" id="a1_${act.id}" min="0" max="999" value="0" oninput="updA1TotalRow()">
-      </td>`;
-    tbody.appendChild(tr);
+/* ═══════════════════════════════════════
+   SECONDARY ACTIVITY
+═══════════════════════════════════════ */
+function buildSecAct() {
+  const grid=document.getElementById('actGrid');
+  grid.innerHTML='';
+  grid.style.gridTemplateColumns='repeat(3,1fr)';
+  for(let yr=0;yr<3;yr++){
+    const card=document.createElement('div');
+    card.className='act-yr';
+    card.innerHTML=`<div class="act-yr-hd" style="background:${SEM_COLORS[yr*2]}">มัธยมศึกษาปีที่ ${yr+1}</div>`;
+    const tbl=document.createElement('table');
+    tbl.className='act-tbl';
+    tbl.innerHTML=`<thead><tr>
+      <th style="min-width:110px">กิจกรรม</th>
+      <th class="c" style="width:60px">ภาค 1</th>
+      <th class="c" style="width:60px">ภาค 2</th>
+    </tr></thead>`;
+    const tbody=document.createElement('tbody');
+    SEC_ACTS.forEach(act=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td><div style="font-weight:600;font-size:13px">${act.name}</div>
+        ${act.exactPerYear?`<div style="font-size:11px;color:var(--ink3)">= ${act.exactPerYear} ชม./ปีพอดี</div>`:''}</td>
+        <td><input type="number" id="a_${act.id}_${yr*2}" class="inp-act" min="0" max="999" value="0" oninput="updSecActFoot(${yr})"></td>
+        <td><input type="number" id="a_${act.id}_${yr*2+1}" class="inp-act" min="0" max="999" value="0" oninput="updSecActFoot(${yr})"></td>`;
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    const tfoot=document.createElement('tfoot');
+    tfoot.id=`actfoot_${yr}`;
+    tbl.appendChild(tfoot);
+    card.appendChild(tbl);
+    grid.appendChild(card);
+    updSecActFoot(yr);
+  }
+}
+
+function updSecActFoot(yr){
+  const s1=yr*2,s2=yr*2+1;
+  const t1=SEC_ACTS.reduce((a,act)=>a+ga(act.id,s1),0);
+  const t2=SEC_ACTS.reduce((a,act)=>a+ga(act.id,s2),0);
+  const c1=t1===60?'var(--green)':'var(--red)';
+  const c2=t2===60?'var(--green)':'var(--red)';
+  const f=document.getElementById(`actfoot_${yr}`);
+  if(f)f.innerHTML=`<tr>
+    <td>รวม</td>
+    <td style="text-align:center;font-size:15px;color:${c1}">${t1}</td>
+    <td style="text-align:center;font-size:15px;color:${c2}">${t2}</td>
+  </tr><tr>
+    <td style="font-weight:400;font-size:11px;color:var(--ink3)">เกณฑ์ = 60 ชม.</td>
+    <td style="text-align:center;color:${c1}">${t1===60?'✓':'✗'}</td>
+    <td style="text-align:center;color:${c2}">${t2===60?'✓':'✗'}</td>
+  </tr>`;
+}
+
+/* ═══════════════════════════════════════
+   PRIMARY ACTIVITY
+═══════════════════════════════════════ */
+function buildPriAct() {
+  const cont=document.getElementById('priActGrid');
+  cont.innerHTML='';
+  cont.style.display='grid';
+  cont.style.gridTemplateColumns='repeat(auto-fit,minmax(260px,1fr))';
+  cont.style.gap='10px';
+
+  YR_LABELS.forEach((lbl,yi)=>{
+    const card=document.createElement('div');
+    card.className='act-yr';
+    card.innerHTML=`<div class="act-yr-hd" style="background:${YR_COLORS[yi]}">${lbl}</div>`;
+    const tbl=document.createElement('table');
+    tbl.className='act-tbl';
+    tbl.innerHTML=`<thead><tr>
+      <th style="min-width:160px">กิจกรรม</th>
+      <th class="c" style="width:90px">ชั่วโมง/ปี</th>
+    </tr></thead>`;
+    const tbody=document.createElement('tbody');
+    PRI_ACTS.forEach(act=>{
+      const tr=document.createElement('tr');
+      tr.innerHTML=`<td><div style="font-weight:600;font-size:13px">${act.name}</div>
+        ${act.exactPerYear?`<div style="font-size:11px;color:var(--ink3)">= ${act.exactPerYear} ชม./ปีพอดี</div>`:''}</td>
+        <td><input type="number" id="pa_${act.id}_${yi}" class="inp-act" style="width:78px" min="0" max="9999" value="0" oninput="updPriActFoot(${yi})"></td>`;
+      tbody.appendChild(tr);
+    });
+    tbl.appendChild(tbody);
+    const tfoot=document.createElement('tfoot');
+    tfoot.id=`pactfoot_${yi}`;
+    tbl.appendChild(tfoot);
+    card.appendChild(tbl);
+    cont.appendChild(card);
+    updPriActFoot(yi);
   });
 }
-function updA1TotalRow(){
-  const sum=ACTS.reduce((a,act)=>a+(parseFloat(document.getElementById('a1_'+act.id)?.value)||0),0);
-  set('a1Sum',sum);
+
+function pga(actId,yi){return parseFloat(document.getElementById(`pa_${actId}_${yi}`)?.value)||0;}
+function updPriActFoot(yi){
+  const tot=PRI_ACTS.reduce((a,act)=>a+pga(act.id,yi),0);
+  const totOk=tot===120;
+  const socialH=pga('social',yi);
+  const socialOk=socialH===10;
+  const allOk=totOk&&socialOk;
+  const el=document.getElementById(`pactfoot_${yi}`);
+  if(el)el.innerHTML=`<tr>
+    <td>รวมทุกกิจกรรม</td>
+    <td style="text-align:center;font-size:16px;font-weight:800;color:${totOk?'var(--green)':'var(--red)'}">${tot}
+      <span style="font-size:11px;font-weight:400;color:${totOk?'var(--green)':'var(--red)'}"> /120</span>
+    </td>
+  </tr><tr>
+    <td style="font-weight:400;font-size:11px;color:var(--ink3)">เกณฑ์รวม = 120 ชม./ปี</td>
+    <td style="text-align:center;font-weight:700;color:${allOk?'var(--green)':'var(--red)'}">${allOk?'✓':'✗'}</td>
+  </tr>`;
 }
 
-/* ══ ACTIVITY expand ══ */
-function expandActivities(){
-  const tbody=document.getElementById('abBig');
-  tbody.innerHTML='';
-  ACTS.forEach(act=>{
-    const initVal=parseFloat(document.getElementById('a1_'+act.id)?.value)||0;
-    const note=act.maxPerYear?`<div class="anote" style="font-size:11px;color:var(--ink3)">≤${act.maxPerYear}ชม./ปี</div>`:'';
-    const cells=[0,1,2,3,4,5].map(si=>`
-      <td><input type="number" id="ab_${act.id}_${si}" min="0" max="999" value="${initVal}" oninput="updActBigFoot()"></td>`
-    ).join('');
-    const tr=document.createElement('tr');
-    tr.innerHTML=`
-      <td><div class="an">${act.name}</div>${note}</td>
-      ${cells}
-      <td class="at-rowtot" id="ab_${act.id}_tot">${f(initVal*6)}</td>`;
-    tbody.appendChild(tr);
-    updActRowTot(act.id);
-  });
-  updActBigFoot();
-  document.getElementById('actExpanded').classList.add('show');
-}
+/* ═══════════════════════════════════════
+   ga helper (secondary)
+═══════════════════════════════════════ */
+function ga(actId,si){return parseFloat(document.getElementById(`a_${actId}_${si}`)?.value)||0;}
 
-function updActRowTot(actId){
-  let sum=0;
-  for(let i=0;i<6;i++) sum+=parseFloat(document.getElementById(`ab_${actId}_${i}`)?.value)||0;
-  const el=document.getElementById(`ab_${actId}_tot`);
-  if(el) el.textContent=f(sum);
-  updActBigFoot();
-}
-
-function updActBigFoot(){
-  const semSums=[0,1,2,3,4,5].map(si=>
-    ACTS.reduce((a,act)=>a+(parseFloat(document.getElementById(`ab_${act.id}_${si}`)?.value)||0),0)
-  );
-  const grandSum=semSums.reduce((a,v)=>a+v,0);
-  const tfoot=document.getElementById('abBigFoot');
-  tfoot.innerHTML=`
-    <tr>
-      <td class="left" style="font-weight:700">รวมทุกกิจกรรม</td>
-      ${semSums.map(h=>{
-        const ok=h===60;
-        return `<td style="font-weight:700;color:${ok?'var(--green)':'var(--red)'}">${h}</td>`;
-      }).join('')}
-      <td style="font-weight:700">${grandSum}</td>
-    </tr>
-    <tr>
-      <td class="left" style="font-weight:400;color:var(--ink3);font-size:12px">เกณฑ์ (ต้องได้ = 60 ชม./ภาคพอดี)</td>
-      ${semSums.map(h=>{
-        const ok=h===60;
-        return `<td style="font-weight:700;font-size:13px;color:${ok?'var(--green)':'var(--red)'}">${ok?'✓':'✗'}</td>`;
-      }).join('')}
-      <td style="font-weight:700;font-size:12px;color:${grandSum===360?'var(--green)':'var(--red)'}">
-        ${grandSum===360?'✓':grandSum+'/360'}
-      </td>
-    </tr>`;
-}
-
-function getActVal(actId,semIdx){
-  return parseFloat(document.getElementById(`ab_${actId}_${semIdx}`)?.value)||0;
-}
-
-/* ══ RUN CHECK ══ */
+/* ═══════════════════════════════════════
+   RUN CHECK
+═══════════════════════════════════════ */
 function runCheck(){
-  if(!document.getElementById('semtbody_0')){ alert('กรุณากดปุ่ม "สร้างตารางทั้ง 6 ภาคเรียน" ในส่วนรายวิชาก่อน'); return; }
-  const actBigRows=[...document.querySelectorAll('#abBig tr')];
-  if(!actBigRows.length){ alert('กรุณากดปุ่ม "สร้างตารางทั้ง 6 ภาคเรียน" ในส่วนกิจกรรมด้วย'); return; }
+  if(level==='secondary') checkSecondary();
+  else checkPrimary();
+}
 
-  let coreT=0, elecT=0;
-  const subjsForDisplay=[];
-  [0,1,2,3,4,5].forEach(si=>{
-    const semRows=[...document.querySelectorAll(`#semtbody_${si} tr`)];
-    semRows.forEach(tr=>{
-      const cr=parseFloat(document.getElementById(tr.id+'_cr')?.value)||0;
-      const tp=document.getElementById(tr.id+'_type')?.value||tr.dataset.type||'core';
-      const nm=document.getElementById(tr.id+'_name')?.value?.trim()||'';
-      if(tp==='core') coreT+=cr; else elecT+=cr;
-      if(nm) subjsForDisplay.push({name:nm,type:tp,sem:si,cr});
+/* ── SECONDARY CHECK ── */
+function checkSecondary(){
+  let coreT=0,elecT=0;
+  const dispMap=new Map();
+  for(let si=0;si<6;si++){
+    document.querySelectorAll(`#tbody_${si} tr`).forEach(tr=>{
+      const inps=tr.querySelectorAll('input'),sels=tr.querySelectorAll('select');
+      if(!inps.length)return;
+      const nm=(inps[1]?.value||'').trim(),tp=sels[0]?.value||'core',cr=parseFloat(inps[2]?.value)||0;
+      if(tp==='core')coreT+=cr;else elecT+=cr;
+      if(nm){
+        const k=nm+'__'+tp;
+        if(!dispMap.has(k))dispMap.set(k,{name:nm,type:tp,sems:Array(6).fill(0),total:0});
+        dispMap.get(k).sems[si]+=cr;dispMap.get(k).total+=cr;
+      }
     });
-  });
-
+  }
   const grandT=coreT+elecT;
+  const subjs=[...dispMap.values()];
+  const coreP=coreT===66,elecP=elecT>=11,totalP=grandT>=77;
 
-  // สร้าง subjs สำหรับตารางผล: group by (name+type) รวมหน่วยกิตตามปี
-  const subjMap=new Map();
-  subjsForDisplay.forEach(({name,type,sem,cr})=>{
-    const key=name+'__'+type;
-    if(!subjMap.has(key)) subjMap.set(key,{name,type,y1:0,y2:0,y3:0,total:0});
-    const s=subjMap.get(key);
-    if(sem<=1) s.y1+=cr;
-    else if(sem<=3) s.y2+=cr;
-    else s.y3+=cr;
-    s.total+=cr;
-  });
-  const subjs=[...subjMap.values()];
-  const coreP=coreT===66, elecP=elecT===15, totalP=grandT===81;
-
-  const semH=[0,1,2,3,4,5].map(si=>
-    ACTS.reduce((a,act)=>a+getActVal(act.id,si),0)
-  );
+  const semH=Array.from({length:6},(_,i)=>SEC_ACTS.reduce((a,act)=>a+ga(act.id,i),0));
   const allSemsP=semH.every(h=>h===60);
-
-  const socialYr=[
-    getActVal('social',0)+getActVal('social',1),
-    getActVal('social',2)+getActVal('social',3),
-    getActVal('social',4)+getActVal('social',5),
-  ];
-  const socialP=socialYr.every(yt=>yt<=15);
+  const socialYr=[0,2,4].map(i=>ga('social',i)+ga('social',i+1));
+  const socialP=socialYr.every(y=>y===15);
   const actP=allSemsP&&socialP;
   const overallP=coreP&&elecP&&totalP&&actP;
 
-  const actSumm=ACTS.map(act=>({
-    ...act,
-    yearTotals:[
-      getActVal(act.id,0)+getActVal(act.id,1),
-      getActVal(act.id,2)+getActVal(act.id,3),
-      getActVal(act.id,4)+getActVal(act.id,5),
-    ],
-    grandTotal:[0,1,2,3,4,5].reduce((a,i)=>a+getActVal(act.id,i),0),
-  }));
-
   const issues=[];
-  if(!coreP)  issues.push(`หน่วยกิตพื้นฐาน ${f(coreT)} หน่วยกิต — ต้องได้ 66 พอดี (${coreT<66?'ขาด':'เกิน'} ${f(Math.abs(coreT-66))} หน่วยกิต)`);
-  if(!elecP)  issues.push(`หน่วยกิตเพิ่มเติม ${f(elecT)} หน่วยกิต — ต้องได้ 15 พอดี (${elecT<15?'ขาด':'เกิน'} ${f(Math.abs(elecT-15))} หน่วยกิต)`);
-  if(!totalP) issues.push(`หน่วยกิตรวม ${f(grandT)} หน่วยกิต — ต้องได้ 81 พอดี (${grandT<81?'ขาด':'เกิน'} ${f(Math.abs(grandT-81))} หน่วยกิต)`);
-  semH.forEach((h,i)=>{
-    if(h!==60) issues.push(`กิจกรรมรวม ${SEM_LABELS[i]} = ${h} ชม. — ต้องได้ 60 ชม.พอดี (${h<60?'ขาด':'เกิน'} ${Math.abs(h-60)} ชม.)`);
-  });
-  socialYr.forEach((yt,i)=>{
-    if(yt>15) issues.push(`กิจกรรมเพื่อสังคมฯ ม.${i+1} = ${yt} ชม. — ต้องไม่เกิน 15 ชม./ปี (เกิน ${yt-15} ชม.)`);
-  });
+  if(!coreP) issues.push(`หน่วยกิตพื้นฐาน ${f(coreT)} — ต้องได้ 66 หน่วยกิตพอดี (${coreT<66?'ขาด':'เกิน'} ${f(Math.abs(coreT-66))} หน่วยกิต)`);
+  if(!elecP) issues.push(`หน่วยกิตเพิ่มเติม ${f(elecT)} — ต้องได้ไม่น้อยกว่า 11 หน่วยกิต (ขาด ${f(11-elecT)} หน่วยกิต)`);
+  if(!totalP)issues.push(`หน่วยกิตรวม ${f(grandT)} — ต้องได้ไม่น้อยกว่า 77 หน่วยกิต (ขาด ${f(77-grandT)} หน่วยกิต)`);
+  semH.forEach((h,i)=>{if(h!==60)issues.push(`กิจกรรมรวม ${SEM_LABELS[i]} = ${h} ชม. — ${h>60?'ชั่วโมงเกินเกณฑ์ที่กำหนด':'ชั่วโมงไม่ครบตามเกณฑ์ที่กำหนด'} (ต้องได้ 60 ชม./ภาคพอดี)`);});
+  socialYr.forEach((y,i)=>{if(y!==15)issues.push(`กิจกรรมเพื่อสังคมและสาธารณประโยชน์ ม.${i+1} = ${y} ชม./ปี — ${y>15?'ชั่วโมงเกินเกณฑ์ที่กำหนด':'ชั่วโมงไม่ครบตามเกณฑ์ที่กำหนด'} (ต้องได้ 15 ชม./ปีพอดี)`);});
 
-  render({subjs,coreT,elecT,grandT,coreP,elecP,totalP,actP,allSemsP,socialP,socialYr,actSumm,semH,overallP,issues});
+  renderSecResult({subjs,coreT,elecT,grandT,coreP,elecP,totalP,actP,overallP,issues,semH,socialYr});
 }
 
-/* ══ RENDER ══ */
-function render(d){
+/* ── PRIMARY CHECK ── */
+function checkPrimary(){
+  // รวบรวมวิชาแต่ละปี
+  const yrData=Array.from({length:6},()=>({core:0,elec:0,hist:0,subjs:[]}));
+  for(let yi=0;yi<6;yi++){
+    document.querySelectorAll(`#yrtbody_${yi} tr`).forEach(tr=>{
+      const inps=tr.querySelectorAll('input'),sels=tr.querySelectorAll('select');
+      if(!inps.length)return;
+      const nm=(inps[0]?.value||'').trim(),tp=sels[0]?.value||'core',h=parseFloat(inps[1]?.value)||0;
+      if(tp==='core')yrData[yi].core+=h;
+      else if(tp==='history'){yrData[yi].core+=h;yrData[yi].hist+=h;}
+      else yrData[yi].elec+=h;
+      if(nm)yrData[yi].subjs.push({name:nm,type:tp,hours:h});
+    });
+  }
+
+  // เกณฑ์แต่ละปี
+  const yrResults=yrData.map(d=>({
+    ...d,
+    coreP: d.core===840,
+    elecP: d.elec>=40,
+    histP: d.hist===40,
+  }));
+
+  // กิจกรรม
+  const actTots=Array.from({length:6},(_,yi)=>PRI_ACTS.reduce((a,act)=>a+pga(act.id,yi),0));
+  const socialTots=Array.from({length:6},(_,yi)=>pga('social',yi));
+  const actPerYrP=Array.from({length:6},(_,yi)=>actTots[yi]===120 && socialTots[yi]===10);
+  const actP=actPerYrP.every(Boolean);
+
+  const overallP=yrResults.every(r=>r.coreP&&r.elecP&&r.histP)&&actP;
+
+  const issues=[];
+  yrResults.forEach((r,i)=>{
+    const lbl=YR_LABELS[i];
+    if(!r.coreP) issues.push(`${lbl} วิชาพื้นฐาน ${f(r.core)} ชม. — ${r.core>840?'เกินเกณฑ์ที่กำหนด':'ไม่ครบตามเกณฑ์ที่กำหนด'} (ต้องได้ 840 ชม./ปีพอดี)`);
+    if(!r.elecP) issues.push(`${lbl} วิชาเพิ่มเติม ${f(r.elec)} ชม. — ไม่ครบตามเกณฑ์ที่กำหนด (ต้องได้ไม่น้อยกว่า 40 ชม./ปี)`);
+    if(!r.histP) issues.push(`${lbl} ประวัติศาสตร์ ${f(r.hist)} ชม. — ${r.hist>40?'เกินเกณฑ์ที่กำหนด':'ไม่ครบตามเกณฑ์ที่กำหนด'} (ต้องได้ 40 ชม./ปีพอดี)`);
+  });
+  actTots.forEach((t,i)=>{
+    if(t!==120) issues.push(`กิจกรรมพัฒนาผู้เรียน ${YR_LABELS[i]} รวม ${t} ชม. — ${t>120?'ชั่วโมงเกินเกณฑ์ที่กำหนด':'ชั่วโมงไม่ครบตามเกณฑ์ที่กำหนด'} (ต้องได้ 120 ชม./ปีพอดี)`);
+  });
+  socialTots.forEach((h,i)=>{
+    if(h!==10) issues.push(`กิจกรรมเพื่อสังคมและสาธารณประโยชน์ ${YR_LABELS[i]} = ${h} ชม. — ${h>10?'ชั่วโมงเกินเกณฑ์ที่กำหนด':'ชั่วโมงไม่ครบตามเกณฑ์ที่กำหนด'} (ต้องได้ 10 ชม./ปีพอดี)`);
+  });
+
+  renderPriResult({yrData,yrResults,actTots,actPerYrP,actP,overallP,issues});
+}
+
+/* ═══════════════════════════════════════
+   RENDER — SECONDARY
+═══════════════════════════════════════ */
+function renderSecResult(d){
   // overall
-  const ov=document.getElementById('overall');
-  ov.className='overall '+(d.overallP?'pass':'fail');
-  const ovT=document.getElementById('ovT'), ovS=document.getElementById('ovS');
-  ovT.textContent=d.overallP?'✓ ผ่านเกณฑ์ทุกด้าน':'✗ ไม่ผ่านเกณฑ์บางด้าน';
-  ovT.className='ov-t '+(d.overallP?'pass':'fail');
-  ovS.textContent=d.overallP?'หน่วยกิตและกิจกรรมครบตามที่กำหนด':'มีบางด้านที่ยังไม่ผ่านเกณฑ์ ดูรายละเอียดด้านล่าง';
-  ovS.className='ov-s '+(d.overallP?'pass':'fail');
-  set('ovEmoji', d.overallP?'🎉':'⚠️');
+  setOverall(d.overallP,'หน่วยกิตและกิจกรรมครบตามที่กำหนด');
 
-  // summary cards
-  set('sg',[
-    {l:'หน่วยกิตรวม',   v:f(d.grandT), r:'ต้องได้ 81 พอดี', p:d.totalP},
-    {l:'วิชาพื้นฐาน',   v:f(d.coreT),  r:'ต้องได้ 66 พอดี', p:d.coreP},
-    {l:'วิชาเพิ่มเติม',  v:f(d.elecT),  r:'ต้องได้ 15 พอดี', p:d.elecP},
-    {l:'กิจกรรม/ภาค',   v:d.actP?'ครบ':'ไม่ครบ', r:'60 ชม./ภาคพอดี · สังคมฯ ≤ 15/ปี', p:d.actP},
-  ].map(c=>`<div class="sc ${c.p?'pass':'fail'}">
-    <div class="cl">${c.l}</div>
-    <div class="cv ${c.p?'pass':'fail'}">${c.v}</div>
-    <div class="cr">${c.r}</div>
-    <div class="cs ${c.p?'pass':'fail'}">${c.p?'✓ ผ่าน':'✗ ไม่ผ่าน'}</div>
-  </div>`).join(''));
+  // cards
+  S('sg',[
+    {l:'หน่วยกิตรวม',v:f(d.grandT),r:'ไม่น้อยกว่า 77 หน่วยกิต',p:d.totalP},
+    {l:'วิชาพื้นฐาน', v:f(d.coreT), r:'ต้องได้ 66 หน่วยกิตพอดี',p:d.coreP},
+    {l:'วิชาเพิ่มเติม',v:f(d.elecT), r:'ไม่น้อยกว่า 11 หน่วยกิต',p:d.elecP},
+    {l:'กิจกรรม/ภาค', v:d.actP?'ครบ': (d.semH.some(h=>h>60)||d.socialYr.some(y=>y>15)?'เกินเกณฑ์':'ไม่ครบ'),
+     r:'60ชม./ภาคพอดี · สังคมฯ = 15ชม./ปีพอดี',p:d.actP,
+     st:d.actP?'✓ ผ่าน':(d.semH.some(h=>h>60)||d.socialYr.some(y=>y>15)?'✗ ชั่วโมงเกินเกณฑ์ที่กำหนด':'✗ ชั่วโมงไม่ครบตามเกณฑ์ที่กำหนด')},
+  ]);
 
-  // progress bars
-  set('pgBars',[
-    {l:'พื้นฐาน (ต้องได้ 66 พอดี)',  v:d.coreT,  m:66},
-    {l:'เพิ่มเติม (ต้องได้ 15 พอดี)', v:d.elecT,  m:15},
-    {l:'รวม (ต้องได้ 81 พอดี)',        v:d.grandT, m:81},
-  ].map(b=>{
-    const pct=Math.min(100,Math.round(b.v/b.m*100));
-    const cls=pct===100?'good':pct>=70?'warn':'bad';
-    return `<div class="pr">
-      <div class="pr-l">${b.l}</div>
-      <div class="pr-t"><div class="pr-f ${cls}" style="width:${pct}%"></div></div>
-      <div class="pr-v">${f(b.v)} / ${b.m}</div>
-    </div>`;
-  }).join(''));
+  // progress
+  S('pgLbl','ความคืบหน้าหน่วยกิต');
+  S('pgBars',[
+    {l:'พื้นฐาน (66 พอดี)', v:d.coreT, m:66, exact:true},
+    {l:'เพิ่มเติม (≥ 11)',   v:d.elecT, m:11, exact:false},
+    {l:'รวม (≥ 77)',         v:d.grandT,m:77, exact:false},
+  ].map(b=>makePbar(b)).join(''));
 
-  // issues
-  set('ib',d.issues.length?`<div class="ib">
-    <h4>⚠️ พบปัญหา ${d.issues.length} รายการ</h4>
-    <ul>${d.issues.map(i=>`<li>${i}</li>`).join('')}</ul>
-  </div>`:'');
+  S('ibWrap',d.issues.length?makeIssues(d.issues):'');
 
-  // subject result table
-  set('rtWrap',`<table class="rt">
+  // table — 6 sem
+  S('resTable',`<table class="rt">
     <thead><tr>
       <th>ชื่อวิชา</th><th>ประเภท</th>
-      <th class="r">ม.1</th><th class="r">ม.2</th><th class="r">ม.3</th><th class="r">รวม 3 ปี</th>
+      ${SEM_LABELS.map(l=>`<th class="r" style="width:65px">${l.replace(' ','<br>')}</th>`).join('')}
+      <th class="r" style="width:60px">รวม</th>
     </tr></thead>
     <tbody>${d.subjs.map(s=>`<tr>
-      <td>${s.name||'—'}</td>
+      <td>${s.name}</td>
       <td><span class="pill ${s.type}">${s.type==='core'?'พื้นฐาน':'เพิ่มเติม'}</span></td>
-      <td class="r">${f(s.y1)}</td><td class="r">${f(s.y2)}</td><td class="r">${f(s.y3)}</td>
-      <td class="r" style="font-weight:700">${f(s.total)}</td>
+      ${s.sems.map(v=>`<td class="rv">${v||''}</td>`).join('')}
+      <td class="rv" style="font-weight:700">${f(s.total)}</td>
     </tr>`).join('')}</tbody>
-    <tfoot>
-      <tr>
-        <td colspan="2" style="font-weight:700">รวมทั้งหมด</td>
-        <td class="r">${f(d.subjs.reduce((a,s)=>a+s.y1,0))}</td>
-        <td class="r">${f(d.subjs.reduce((a,s)=>a+s.y2,0))}</td>
-        <td class="r">${f(d.subjs.reduce((a,s)=>a+s.y3,0))}</td>
-        <td class="r" style="font-size:14px;font-weight:700">${f(d.grandT)}</td>
-      </tr>
-      <tr><td colspan="5" style="font-size:12px;color:var(--ink3);font-weight:400">
-        พื้นฐาน ${f(d.coreT)} + เพิ่มเติม ${f(d.elecT)} หน่วยกิต
-      </td><td></td></tr>
-    </tfoot>
+    <tfoot><tr>
+      <td colspan="2" style="font-weight:700">รวมทุกวิชา</td>
+      ${[0,1,2,3,4,5].map(si=>{
+        const t=d.subjs.reduce((a,s)=>a+s.sems[si],0);
+        return `<td class="rv">${f(t)}</td>`;
+      }).join('')}
+      <td class="rv" style="font-size:14px;font-weight:800">${f(d.grandT)}</td>
+    </tr></tfoot>
   </table>`);
 
-  // activity result — 3 ตารางรายปี
-  const YR_COLORS = [
-    { hd: 'linear-gradient(90deg,#0D7377,#14A5AB)', badge_pass:'#0D5C60', badge_fail:'#991B1B' },
-    { hd: 'linear-gradient(90deg,#7C3AED,#A855F7)', badge_pass:'#4C1D95', badge_fail:'#991B1B' },
-    { hd: 'linear-gradient(90deg,#0E9F6E,#34D399)', badge_pass:'#065F46', badge_fail:'#991B1B' },
-  ];
+  // activity
+  renderSecActResult(d);
 
-  const actYearTables=[0,1,2].map(yi=>{
-    const s1=yi*2, s2=yi*2+1;
-    const totS1=d.actSumm.reduce((a,act)=>a+getActVal(act.id,s1),0);
-    const totS2=d.actSumm.reduce((a,act)=>a+getActVal(act.id,s2),0);
-    const totYr=totS1+totS2;
-    const s1ok=totS1===60, s2ok=totS2===60, yrok=totYr===120;
+  // ตารางสรุปหน่วยกิตรายวิชา (ม.1-3 รวมทุกภาค)
+  renderSecSummaryTable(d);
 
-    const rows=d.actSumm.map(act=>{
-      const h1=getActVal(act.id,s1), h2=getActVal(act.id,s2), hy=h1+h2;
-      const socialBad=act.maxPerYear&&hy>act.maxPerYear;
-      const rowColor=socialBad?'var(--red)':'var(--ink)';
-      const socialNote=act.maxPerYear
-        ?`<span style="font-size:11px;color:${socialBad?'var(--red)':'var(--ink3)'}"> (≤${act.maxPerYear}ชม./ปี)</span>`:'';
-      return `<tr style="border-bottom:1px solid var(--rule2);">
-        <td style="padding:9px 14px;font-size:13px;font-weight:500;color:${rowColor}">${act.name}${socialNote}</td>
-        <td style="text-align:center;padding:9px 14px;font-size:15px;font-weight:700;color:${rowColor}">${h1}</td>
-        <td style="text-align:center;padding:9px 14px;font-size:15px;font-weight:700;color:${rowColor}">${h2}</td>
-        <td style="text-align:center;padding:9px 14px;font-size:15px;font-weight:700;color:${socialBad?'var(--red)':'var(--ink2)'}">${hy}</td>
+  showResult();
+}
+
+function renderSecActResult(d){
+  const html=[0,1,2].map(yi=>{
+    const s1=yi*2,s2=yi*2+1;
+    const t1=SEC_ACTS.reduce((a,act)=>a+ga(act.id,s1),0);
+    const t2=SEC_ACTS.reduce((a,act)=>a+ga(act.id,s2),0);
+    const ty=t1+t2;
+    const ok1=t1===60,ok2=t2===60,oky=ty===120;
+    const socYr=ga('social',s1)+ga('social',s2);
+    const socOk=socYr===15;
+    const yrP=ok1&&ok2&&oky&&socOk;
+    const rows=SEC_ACTS.map(act=>{
+      const h1=ga(act.id,s1),h2=ga(act.id,s2),hy=h1+h2;
+      const bad=act.exactPerYear?hy!==act.exactPerYear:false;
+      const c=bad?'var(--red)':'var(--ink)';
+      return `<tr style="border-bottom:1px solid var(--bdr2)">
+        <td style="padding:8px 14px;font-size:13px;font-weight:500;color:${c}">${act.name}
+          ${act.exactPerYear?`<span style="font-size:11px;color:${bad?'var(--red)':'var(--ink3)'};margin-left:4px">(= ${act.exactPerYear} ชม./ปีพอดี)</span>`:''}
+        </td>
+        <td style="text-align:center;font-weight:700;font-size:15px;padding:8px;color:${c}">${h1}</td>
+        <td style="text-align:center;font-weight:700;font-size:15px;padding:8px;color:${c}">${h2}</td>
+        <td style="text-align:center;font-weight:700;font-size:15px;padding:8px;color:${bad?'var(--red)':'var(--ink2)'}">${hy}${act.exactPerYear?`<span style="font-size:11px;color:${bad?'var(--red)':'var(--ink4)'}"> /${act.exactPerYear}${bad?(hy>act.exactPerYear?' ⚠️เกิน':' ⚠️ไม่ครบ'):''}</span>`:''}</td>
       </tr>`;
     }).join('');
-
-    const c1=s1ok?'var(--green)':'var(--red)';
-    const c2=s2ok?'var(--green)':'var(--red)';
-    const cy=yrok?'var(--green)':'var(--red)';
-    const yearPass=s1ok&&s2ok&&yrok&&d.actSumm.every(act=>!act.maxPerYear||(getActVal(act.id,s1)+getActVal(act.id,s2))<=act.maxPerYear);
-    const col=YR_COLORS[yi];
-
-    return `<div style="background:#fff;border-radius:14px;box-shadow:var(--sh2);overflow:hidden;margin-bottom:1rem;">
-      <div style="background:${col.hd};color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
-        <span style="font-family:'Noto Serif Thai',serif;font-weight:800;font-size:16px;">มัธยมศึกษาปีที่ ${yi+1}</span>
-        <span style="font-size:12px;font-weight:700;background:${yearPass?col.badge_pass:col.badge_fail};padding:4px 14px;border-radius:100px;box-shadow:0 1px 4px rgba(0,0,0,.2);">
-          ${yearPass?'✓ ผ่านเกณฑ์':'✗ ไม่ผ่านเกณฑ์'}
-        </span>
+    return `<div style="background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden;margin-bottom:10px">
+      <div style="background:${SEM_COLORS[yi*2]};color:#fff;padding:11px 16px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:'Noto Serif Thai',serif;font-weight:800;font-size:15px">มัธยมศึกษาปีที่ ${yi+1}</span>
+        <span style="font-size:12px;font-weight:700;background:${yrP?'rgba(0,80,0,.4)':'rgba(180,0,0,.4)'};padding:3px 14px;border-radius:100px">${yrP?'✓ ผ่าน':'✗ ไม่ผ่าน'}</span>
       </div>
-      <table style="width:100%;border-collapse:collapse;font-size:13px;">
-        <thead>
-          <tr style="background:var(--paper2);border-bottom:1.5px solid var(--rule);">
-            <th style="text-align:left;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);min-width:200px;">กิจกรรม</th>
-            <th style="text-align:center;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);width:95px;">ภาคเรียน 1</th>
-            <th style="text-align:center;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);width:95px;">ภาคเรียน 2</th>
-            <th style="text-align:center;padding:9px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--ink3);width:85px;">รวมปี</th>
-          </tr>
-        </thead>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--sur2);border-bottom:1.5px solid var(--bdr)">
+          <th style="text-align:left;padding:8px 14px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink3);min-width:200px">กิจกรรม</th>
+          <th style="text-align:center;padding:8px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink3);width:80px">ภาค 1</th>
+          <th style="text-align:center;padding:8px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink3);width:80px">ภาค 2</th>
+          <th style="text-align:center;padding:8px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink3);width:75px">รวมปี</th>
+        </tr></thead>
         <tbody>${rows}</tbody>
         <tfoot>
-          <tr style="background:var(--paper2);border-top:2px solid var(--rule);">
-            <td style="padding:10px 14px;font-weight:700;font-size:14px;">รวมทุกกิจกรรม</td>
-            <td style="text-align:center;font-weight:800;font-size:18px;padding:10px 14px;color:${c1};">${totS1}</td>
-            <td style="text-align:center;font-weight:800;font-size:18px;padding:10px 14px;color:${c2};">${totS2}</td>
-            <td style="text-align:center;font-weight:800;font-size:18px;padding:10px 14px;color:${cy};">${totYr}</td>
+          <tr style="background:var(--sur2);border-top:2px solid var(--bdr)">
+            <td style="padding:9px 14px;font-weight:700">รวมทุกกิจกรรม</td>
+            <td style="text-align:center;font-weight:800;font-size:18px;color:${ok1?'var(--green)':'var(--red)'}">${t1}</td>
+            <td style="text-align:center;font-weight:800;font-size:18px;color:${ok2?'var(--green)':'var(--red)'}">${t2}</td>
+            <td style="text-align:center;font-weight:800;font-size:18px;color:${oky?'var(--green)':'var(--red)'}">${ty}</td>
           </tr>
-          <tr style="background:var(--paper2);border-top:1px solid var(--rule2);">
-            <td style="padding:6px 14px;font-size:12px;color:var(--ink3);">เกณฑ์ (= 60 ชม./ภาค · 120 ชม./ปีพอดี)</td>
-            <td style="text-align:center;font-weight:700;font-size:14px;padding:6px 14px;color:${c1};">${s1ok?'✓':'✗'}</td>
-            <td style="text-align:center;font-weight:700;font-size:14px;padding:6px 14px;color:${c2};">${s2ok?'✓':'✗'}</td>
-            <td style="text-align:center;font-weight:700;font-size:14px;padding:6px 14px;color:${cy};">${yrok?'✓':'✗'}</td>
+          <tr style="background:var(--sur2);border-top:1px solid var(--bdr2)">
+            <td style="padding:6px 14px;font-size:12px;color:var(--ink3)">เกณฑ์ = 60 ชม./ภาค · 120 ชม./ปีพอดี | กิจกรรมเพื่อสังคมฯ = 15 ชม./ปีพอดี</td>
+            <td style="text-align:center;font-weight:700;color:${ok1?'var(--green)':'var(--red)'}">${ok1?'✓':'✗'}</td>
+            <td style="text-align:center;font-weight:700;color:${ok2?'var(--green)':'var(--red)'}">${ok2?'✓':'✗'}</td>
+            <td style="text-align:center;font-weight:700;color:${oky?'var(--green)':'var(--red)'}">${oky?'✓':'✗'}</td>
           </tr>
         </tfoot>
       </table>
     </div>`;
   }).join('');
-
-  set('arg', actYearTables);
-
-  document.getElementById('rs').classList.add('show');
-  swT('subjects',document.querySelector('.tb'));
-  setTimeout(()=>document.getElementById('rs').scrollIntoView({behavior:'smooth',block:'start'}),100);
+  S('resAct',html);
 }
-function set(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
-function swT(name,el){
+
+/* ═══════════════════════════════════════
+   RENDER — PRIMARY
+═══════════════════════════════════════ */
+function renderPriResult(d){
+  setOverall(d.overallP,'ชั่วโมงวิชาและกิจกรรมครบตามที่กำหนด');
+
+  // summary cards per year
+  const allCoreP=d.yrResults.every(r=>r.coreP);
+  const allElecP=d.yrResults.every(r=>r.elecP);
+  const allHistP=d.yrResults.every(r=>r.histP);
+  S('sg',[
+    {l:'วิชาพื้นฐาน/ปี', v:allCoreP?'ครบทุกปี':'ไม่ครบ', r:'840 ชม./ปีพอดี',p:allCoreP},
+    {l:'วิชาเพิ่มเติม/ปี',v:allElecP?'ครบทุกปี':'ไม่ครบ', r:'ไม่น้อยกว่า 40 ชม./ปี',p:allElecP},
+    {l:'ประวัติศาสตร์/ปี',v:allHistP?'ครบทุกปี':'ไม่ครบ', r:'40 ชม./ปีพอดี (รวมในพื้นฐาน)',p:allHistP},
+    {l:'กิจกรรม/ปี',     v:d.actP?'ครบทุกปี':'ไม่ครบ',   r:'120 ชม./ปีพอดี · สังคมฯ = 10 ชม./ปีพอดี',p:d.actP},
+  ]);
+
+  // progress — แสดงรายปี
+  S('pgLbl','ชั่วโมงวิชาพื้นฐานรายปี (เกณฑ์ 840 ชม.)');
+  S('pgBars',d.yrData.map((yr,i)=>{
+    const pct=Math.min(100,Math.round(yr.core/840*100));
+    const cl=yr.core===840?'g':pct>=80?'w':'b';
+    return `<div class="pr"><div class="pr-l">${YR_LABELS[i]} พื้นฐาน</div>
+      <div class="pr-tr"><div class="pr-f ${cl}" style="width:${pct}%"></div></div>
+      <div class="pr-v">${f(yr.core)}/840</div></div>`;
+  }).join(''));
+
+  S('ibWrap',d.issues.length?makeIssues(d.issues):'');
+
+  // table รายวิชา รายปี
+  const allSubjNames=new Set();
+  d.yrData.forEach(yr=>yr.subjs.forEach(s=>allSubjNames.add(s.name+'__'+s.type)));
+  const rows=[...allSubjNames].map(k=>{
+    const [name,type]=k.split('__');
+    const hrs=d.yrData.map(yr=>{
+      const found=yr.subjs.find(s=>s.name===name&&s.type===type);
+      return found?found.hours:0;
+    });
+    return {name,type,hrs,total:hrs.reduce((a,v)=>a+v,0)};
+  });
+
+  S('resTable',`<table class="rt">
+    <thead><tr>
+      <th>ชื่อวิชา</th><th>ประเภท</th>
+      ${YR_LABELS.map(l=>`<th class="r" style="width:55px">${l}</th>`).join('')}
+      <th class="r" style="width:65px">รวม 6 ปี</th>
+    </tr></thead>
+    <tbody>${rows.map(r=>`<tr>
+      <td>${r.name}</td>
+      <td><span class="pill ${r.type==='history'?'history':r.type==='elective'?'elective':'core'}">
+        ${r.type==='history'?'ประวัติศาสตร์':r.type==='elective'?'เพิ่มเติม':'พื้นฐาน'}
+      </span></td>
+      ${r.hrs.map(h=>`<td class="rv">${h||''}</td>`).join('')}
+      <td class="rv" style="font-weight:700">${f(r.total)}</td>
+    </tr>`).join('')}</tbody>
+    <tfoot><tr>
+      <td colspan="2" style="font-weight:700">รวมทุกวิชา</td>
+      ${d.yrData.map(yr=>`<td class="rv">${f(yr.core+yr.elec)}</td>`).join('')}
+      <td class="rv" style="font-size:14px;font-weight:800">${f(d.yrData.reduce((a,yr)=>a+yr.core+yr.elec,0))}</td>
+    </tr></tfoot>
+  </table>`);
+
+  // activity result
+  const actHtml=YR_LABELS.map((lbl,yi)=>{
+    const tot=d.actTots[yi];
+    const ok=d.actPerYrP[yi];
+    const rows=PRI_ACTS.map(act=>{
+      const h=pga(act.id,yi);
+      const bad=act.exactPerYear ? h!==act.exactPerYear : false;
+      const c=bad?'var(--red)':'var(--ink)';
+      return `<tr style="border-bottom:1px solid var(--bdr2)">
+        <td style="padding:8px 14px;font-size:13px;font-weight:500;color:${c}">${act.name}
+          ${act.exactPerYear?`<span style="font-size:11px;color:${bad?'var(--red)':'var(--ink3)'};margin-left:4px">(= ${act.exactPerYear} ชม./ปีพอดี)</span>`:''}
+        </td>
+        <td style="text-align:center;font-weight:700;font-size:15px;padding:8px;color:${c}">
+          ${h}${act.exactPerYear?`<span style="font-size:11px;color:${bad?'var(--red)':'var(--ink4)'}"> /${act.exactPerYear}${bad?(h>act.exactPerYear?' ⚠️เกิน':' ⚠️ไม่ครบ'):''}</span>`:''}
+        </td>
+      </tr>`;
+    }).join('');
+    const totOk=d.actTots[yi]===120;
+    const socOk=pga('social',yi)===10;
+    return `<div style="background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,.08);overflow:hidden;margin-bottom:10px">
+      <div style="background:${YR_COLORS[yi]};color:#fff;padding:11px 16px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-family:'Noto Serif Thai',serif;font-weight:800;font-size:15px">${lbl}</span>
+        <span style="font-size:12px;font-weight:700;background:${ok?'rgba(0,80,0,.4)':'rgba(180,0,0,.4)'};padding:3px 14px;border-radius:100px">${ok?'✓ ผ่าน':'✗ ไม่ผ่าน'}</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:var(--sur2);border-bottom:1.5px solid var(--bdr)">
+          <th style="text-align:left;padding:8px 14px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink3)">กิจกรรม</th>
+          <th style="text-align:center;padding:8px;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--ink3);width:100px">ชั่วโมง/ปี</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot>
+          <tr style="background:var(--sur2);border-top:2px solid var(--bdr)">
+            <td style="padding:9px 14px;font-weight:700">รวมทุกกิจกรรม</td>
+            <td style="text-align:center;font-weight:800;font-size:18px;color:${totOk?'var(--green)':'var(--red)'}">${tot} <span style="font-size:11px;font-weight:400">/120</span></td>
+          </tr>
+          <tr style="background:var(--sur2);border-top:1px solid var(--bdr2)">
+            <td style="padding:6px 14px;font-size:12px;color:var(--ink3)">เกณฑ์รวม = 120 ชม./ปี</td>
+            <td style="text-align:center;font-weight:700;color:${ok?'var(--green)':'var(--red)'}">${ok?'✓':'✗'}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>`;
+  }).join('');
+  S('resAct',actHtml);
+
+  // ตารางสรุปหน่วยกิต (ป.4-6 แปลงจากชั่วโมง)
+  renderPriSummaryTable(d);
+
+  showResult();
+}
+
+/* ═══════════════════════════════════════
+   SUMMARY TABLE — SECONDARY (ม.1-3 รวมทุกภาค)
+   แสดงรายวิชา × หน่วยกิตรวม
+═══════════════════════════════════════ */
+function renderSecSummaryTable(d){
+  // กลุ่มสาระตายตัวตามหลักสูตร
+  const GROUPS = [
+    {label:'ภาษาไทย',                                          keywords:['ภาษาไทย']},
+    {label:'คณิตศาสตร์',                                        keywords:['คณิตศาสตร์']},
+    {label:'วิทยาศาสตร์และเทคโนโลยี',                          keywords:['วิทยาศาสตร์','เทคโนโลยี']},
+    {label:'สังคมศึกษา ศาสนา และวัฒนธรรม (รวมประวัติศาสตร์)', keywords:['สังคม','ศาสนา','วัฒนธรรม','ประวัติศาสตร์']},
+    {label:'สุขศึกษาและพลศึกษา',                               keywords:['สุขศึกษา','พลศึกษา']},
+    {label:'ศิลปะ',                                            keywords:['ศิลปะ','ดนตรี','นาฏศิลป์','ทัศนศิลป์']},
+    {label:'การงานอาชีพและเทคโนโลยี',                          keywords:['การงาน','อาชีพ']},
+    {label:'ภาษาต่างประเทศ',                                    keywords:['ภาษาต่างประเทศ','ภาษาอังกฤษ','อังกฤษ']},
+  ];
+
+  // สร้าง map ชื่อวิชา → หน่วยกิตรวม จากข้อมูลที่กรอก
+  const nameMap = new Map();
+  d.subjs.forEach(s => {
+    if (!nameMap.has(s.name)) nameMap.set(s.name, {total:0, type:s.type});
+    nameMap.get(s.name).total += s.total;
+  });
+
+  // จับคู่วิชาเข้ากลุ่มสาระ
+  function matchGroup(subjectName, keywords) {
+    return keywords.some(kw => subjectName.includes(kw));
+  }
+  function getGroupTotal(keywords) {
+    let tot = 0;
+    nameMap.forEach((v, name) => {
+      if (matchGroup(name, keywords)) tot += v.total;
+    });
+    return tot;
+  }
+
+  // หาวิชาเพิ่มเติม (ไม่ match กลุ่มสาระใดเลย หรือ type=elective)
+  const allKeywords = GROUPS.flatMap(g => g.keywords);
+  const elecEntries = [];
+  nameMap.forEach((v, name) => {
+    if (v.type === 'elective') elecEntries.push({name, total: v.total});
+  });
+
+  // คำนวณยอดรวม
+  const groupTotals = GROUPS.map(g => ({...g, total: getGroupTotal(g.keywords)}));
+  const coreTotal = groupTotals.reduce((a, g) => a + g.total, 0);
+  const elecTotal = elecEntries.reduce((a, e) => a + e.total, 0);
+  const grandTotal = coreTotal + elecTotal;
+
+  const tdStyle = 'padding:9px 14px;font-size:13px;border-bottom:1px solid var(--bdr2)';
+  const tdValStyle = `${tdStyle};text-align:right;font-weight:700;font-size:14px`;
+
+  const coreRows = groupTotals.map(g =>
+    `<tr>
+      <td style="${tdStyle}">${g.label}</td>
+      <td style="${tdValStyle}">${g.total > 0 ? f(g.total) : '-'}</td>
+    </tr>`).join('');
+
+  const elecRows = elecEntries.length
+    ? elecEntries.map(e =>
+      `<tr><td style="${tdStyle}">${e.name}</td>
+       <td style="${tdValStyle}">${f(e.total)}</td></tr>`).join('')
+    : `<tr><td style="${tdStyle};color:var(--ink3)">-</td><td style="${tdValStyle}">-</td></tr>`;
+
+  const html = `<table style="width:100%;border-collapse:collapse;font-size:13px;max-width:500px;">
+    <thead>
+      <tr style="background:var(--acp);">
+        <th style="padding:10px 14px;text-align:center;font-size:12px;font-weight:700;color:var(--acd);border-bottom:2px solid var(--bdr);">
+          กลุ่มสาระการเรียนรู้ /<br>การศึกษาค้นคว้าด้วยตนเอง
+        </th>
+        <th style="padding:10px 14px;text-align:right;font-size:12px;font-weight:700;color:var(--acd);border-bottom:2px solid var(--bdr);width:130px;">
+          หน่วยกิตรวม (ม.1-3)
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      ${coreRows}
+      <tr style="background:var(--sur2);border-top:2px solid var(--bdr);">
+        <td style="padding:9px 14px;font-weight:700">รวมวิชาพื้นฐาน</td>
+        <td style="padding:9px 14px;text-align:right;font-weight:800;font-size:15px;color:var(--blue)">${f(coreTotal)}</td>
+      </tr>
+      <tr style="background:var(--abg);">
+        <td colspan="2" style="padding:7px 14px;font-size:12px;font-weight:700;color:var(--amber);">รายวิชาเพิ่มเติม</td>
+      </tr>
+      ${elecRows}
+      <tr style="background:var(--sur2);border-top:2px solid var(--bdr);">
+        <td style="padding:9px 14px;font-weight:700">รวมวิชาเพิ่มเติม</td>
+        <td style="padding:9px 14px;text-align:right;font-weight:800;font-size:15px;color:var(--amber)">${elecTotal > 0 ? f(elecTotal) : '-'}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr style="background:var(--acp);border-top:2px solid var(--bdr);">
+        <td style="padding:11px 14px;font-family:'Noto Serif Thai',serif;font-weight:800;font-size:14px;color:var(--acd);">รวมหน่วยกิตตลอดหลักสูตร (ม.1-3)</td>
+        <td style="padding:11px 14px;text-align:right;font-family:'Noto Serif Thai',serif;font-weight:800;font-size:22px;color:var(--acd);">${f(grandTotal)}</td>
+      </tr>
+    </tfoot>
+  </table>`;
+  S('resSummary', html);
+}
+
+/* ═══════════════════════════════════════
+   SUMMARY TABLE — PRIMARY (ป.4-6 → หน่วยกิต)
+═══════════════════════════════════════ */
+function renderPriSummaryTable(d){
+  // กลุ่มสาระตายตัวตามหลักสูตรประถม
+  const GROUPS = [
+    {label:'ภาษาไทย',                                          keywords:['ภาษาไทย']},
+    {label:'คณิตศาสตร์',                                        keywords:['คณิตศาสตร์']},
+    {label:'วิทยาศาสตร์และเทคโนโลยี',                          keywords:['วิทยาศาสตร์','เทคโนโลยี']},
+    {label:'สังคมศึกษา ศาสนา และวัฒนธรรม (รวมประวัติศาสตร์)', keywords:['สังคม','ศาสนา','วัฒนธรรม','ประวัติศาสตร์']},
+    {label:'สุขศึกษาและพลศึกษา',                               keywords:['สุขศึกษา','พลศึกษา']},
+    {label:'ศิลปะ',                                            keywords:['ศิลปะ','ดนตรี','นาฏศิลป์','ทัศนศิลป์']},
+    {label:'การงานอาชีพและเทคโนโลยี',                          keywords:['การงาน','อาชีพ']},
+    {label:'ภาษาต่างประเทศ',                                    keywords:['ภาษาต่างประเทศ','ภาษาอังกฤษ','อังกฤษ']},
+  ];
+
+  const toCredits = hrs => f(hrs / 40);
+
+  // รวมชั่วโมง ป.4-6 (index 3,4,5) แยกตามชื่อวิชา
+  const nameMap = new Map();
+  [3,4,5].forEach(yi => {
+    d.yrData[yi].subjs.forEach(s => {
+      if (!nameMap.has(s.name)) nameMap.set(s.name, {totalHrs:0, type:s.type});
+      nameMap.get(s.name).totalHrs += s.hours;
+    });
+  });
+
+  function matchGroup(name, keywords){ return keywords.some(kw => name.includes(kw)); }
+  function getGroupHrs(keywords){
+    let t=0;
+    nameMap.forEach((v,name) => { if(matchGroup(name,keywords)) t+=v.totalHrs; });
+    return t;
+  }
+
+  const groupData = GROUPS.map(g => ({...g, hrs: getGroupHrs(g.keywords)}));
+  const elecEntries = [];
+  nameMap.forEach((v,name) => {
+    if(v.type==='elective') elecEntries.push({name, hrs:v.totalHrs});
+  });
+
+  const coreHrsTotal = groupData.reduce((a,g) => a+g.hrs, 0);
+  const elecHrsTotal = elecEntries.reduce((a,e) => a+e.hrs, 0);
+  const grandHrs = coreHrsTotal + elecHrsTotal;
+
+  const tdStyle = 'padding:9px 14px;font-size:13px;border-bottom:1px solid var(--bdr2)';
+
+  const coreRows = groupData.map(g =>
+    `<tr>
+      <td style="${tdStyle}">${g.label}</td>
+      <td style="${tdStyle};text-align:center;color:var(--ink3);font-size:12px">${g.hrs > 0 ? g.hrs+' ชม.' : '-'}</td>
+      <td style="${tdStyle};text-align:right;font-weight:700;font-size:14px">${g.hrs > 0 ? toCredits(g.hrs) : '-'}</td>
+    </tr>`).join('');
+
+  const elecRows = elecEntries.length
+    ? elecEntries.map(e =>
+      `<tr>
+        <td style="${tdStyle}">${e.name}</td>
+        <td style="${tdStyle};text-align:center;color:var(--ink3);font-size:12px">${e.hrs} ชม.</td>
+        <td style="${tdStyle};text-align:right;font-weight:700;font-size:14px">${toCredits(e.hrs)}</td>
+      </tr>`).join('')
+    : `<tr><td style="${tdStyle};color:var(--ink3)" colspan="3">ไม่มีวิชาเพิ่มเติม</td></tr>`;
+
+  const html = `
+    <div style="background:var(--abg);border:1px solid #FCD34D;border-left:4px solid #E8A020;border-radius:var(--r);padding:10px 14px;margin-bottom:1rem;font-size:13px;color:#78350F;">
+      <strong>หมายเหตุ:</strong> คำนวณจากชั่วโมง <strong>ป.4-6</strong> เท่านั้น &nbsp;|&nbsp; 40 ชม./ปี = 1.0 หน่วยกิต
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:13px;max-width:600px;">
+      <thead>
+        <tr style="background:var(--acp);">
+          <th style="padding:10px 14px;text-align:center;font-size:12px;font-weight:700;color:var(--acd);border-bottom:2px solid var(--bdr);">
+            กลุ่มสาระการเรียนรู้ /<br>การศึกษาค้นคว้าด้วยตนเอง
+          </th>
+          <th style="padding:10px 14px;text-align:center;font-size:12px;font-weight:700;color:var(--acd);border-bottom:2px solid var(--bdr);width:110px;">
+            ชั่วโมงรวม<br>(ป.4-6)
+          </th>
+          <th style="padding:10px 14px;text-align:right;font-size:12px;font-weight:700;color:var(--acd);border-bottom:2px solid var(--bdr);width:120px;">
+            หน่วยกิตรวม<br>(ป.4-6)
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        ${coreRows}
+        <tr style="background:var(--sur2);border-top:2px solid var(--bdr);">
+          <td style="padding:9px 14px;font-weight:700">รวมวิชาพื้นฐาน</td>
+          <td style="padding:9px 14px;text-align:center;color:var(--ink3);font-size:12px">${coreHrsTotal} ชม.</td>
+          <td style="padding:9px 14px;text-align:right;font-weight:800;font-size:15px;color:var(--blue)">${toCredits(coreHrsTotal)}</td>
+        </tr>
+        <tr style="background:var(--abg);">
+          <td colspan="3" style="padding:7px 14px;font-size:12px;font-weight:700;color:var(--amber);">รายวิชาเพิ่มเติม</td>
+        </tr>
+        ${elecRows}
+        <tr style="background:var(--sur2);border-top:2px solid var(--bdr);">
+          <td style="padding:9px 14px;font-weight:700">รวมวิชาเพิ่มเติม</td>
+          <td style="padding:9px 14px;text-align:center;color:var(--ink3);font-size:12px">${elecHrsTotal > 0 ? elecHrsTotal+' ชม.' : '-'}</td>
+          <td style="padding:9px 14px;text-align:right;font-weight:800;font-size:15px;color:var(--amber)">${elecHrsTotal > 0 ? toCredits(elecHrsTotal) : '-'}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr style="background:var(--acp);border-top:2px solid var(--bdr);">
+          <td style="padding:11px 14px;font-family:'Noto Serif Thai',serif;font-weight:800;font-size:14px;color:var(--acd);">รวมหน่วยกิตตลอดหลักสูตร (ป.4-6)</td>
+          <td style="padding:11px 14px;text-align:center;font-size:12px;color:var(--ink3)">${grandHrs} ชม.</td>
+          <td style="padding:11px 14px;text-align:right;font-family:'Noto Serif Thai',serif;font-weight:800;font-size:22px;color:var(--acd);">${toCredits(grandHrs)}</td>
+        </tr>
+      </tfoot>
+    </table>`;
+  S('resSummary', html);
+}
+
+function setOverall(pass, passMsg){
+  const ov=document.getElementById('overall');
+  ov.className='overall '+(pass?'pass':'fail');
+  document.getElementById('ovT').className='ov-t '+(pass?'pass':'fail');
+  document.getElementById('ovT').textContent=pass?'✓ ผ่านเกณฑ์ทุกด้าน':'✗ ไม่ผ่านเกณฑ์บางด้าน';
+  document.getElementById('ovS').className='ov-s '+(pass?'pass':'fail');
+  document.getElementById('ovS').textContent=pass?passMsg:'มีบางด้านที่ยังไม่ผ่านเกณฑ์ ดูรายละเอียดด้านล่าง';
+}
+
+function makePbar(b){
+  const pct=Math.min(100,Math.round(b.v/b.m*100));
+  const pass=b.exact?b.v===b.m:b.v>=b.m;
+  const cl=pass?'g':pct>=70?'w':'b';
+  return `<div class="pr"><div class="pr-l">${b.l}</div>
+    <div class="pr-tr"><div class="pr-f ${cl}" style="width:${pct}%"></div></div>
+    <div class="pr-v">${f(b.v)} / ${b.exact?b.m:'≥'+b.m}</div></div>`;
+}
+
+function makeIssues(issues){
+  return `<div class="ib"><h4>⚠️ พบปัญหา ${issues.length} รายการ</h4>
+    <ul>${issues.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+}
+
+function showResult(){
+  document.getElementById('resSection').classList.add('show');
+  swTab('sub',document.querySelector('.tb'));
+  setTimeout(()=>document.getElementById('resSection').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+/* ═══════════════════════════════════════
+   SUMMARY CARDS
+═══════════════════════════════════════ */
+function S(id, data){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(Array.isArray(data)){
+    el.innerHTML=data.map(c=>`<div class="sc ${c.p?'pass':'fail'}">
+      <div class="sc-lbl">${c.l}</div>
+      <div class="sc-val ${c.p?'pass':'fail'}">${c.v}</div>
+      <div class="sc-req">${c.r}</div>
+      <div class="sc-st ${c.p?'pass':'fail'}">${c.st||(c.p?'✓ ผ่าน':'✗ ไม่ผ่าน')}</div>
+    </div>`).join('');
+  } else {
+    el.innerHTML=data;
+  }
+}
+
+/* ═══════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════ */
+function f(n){return (n%1===0)?n:parseFloat(n.toFixed(1));}
+function esc(s){return (s||'').replace(/"/g,'&quot;');}
+function swTab(name,el){
   document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
-  if(el) el.classList.add('active');
+  if(el)el.classList.add('active');
   document.getElementById('panel-'+name)?.classList.add('active');
 }
 </script>
