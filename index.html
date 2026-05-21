@@ -280,7 +280,18 @@ body.primary{--bg:#FFF8F0;--sur2:#FFF3E8;--bdr:#F9C89E;--bdr2:#FDE4C8;--acp:var(
 <header class="bar" id="topbar">
   <div class="bar-in">
     <a href="#" class="logo"><div class="logo-box" id="logoIcon">📋</div><span id="logoText">ระบบตรวจสอบ ปพ.1</span></a>
-    <span class="tag" id="topTag">หลักสูตรแกนกลาง 2551</span>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button type="button" onclick="openGuide()"
+        style="font-family:'Sarabun',sans-serif;font-size:13px;font-weight:600;
+               background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.4);
+               color:#fff;border-radius:100px;padding:6px 16px;cursor:pointer;
+               transition:background .15s;"
+        onmouseover="this.style.background='rgba(255,255,255,.3)'"
+        onmouseout="this.style.background='rgba(255,255,255,.18)'">
+        📖 คู่มือการใช้งาน
+      </button>
+      <span class="tag" id="topTag">หลักสูตรแกนกลาง 2551</span>
+    </div>
   </div>
 </header>
 
@@ -1456,5 +1467,313 @@ function swTab(name,el){
   document.getElementById('panel-'+name)?.classList.add('active');
 }
 </script>
+<!-- ═══ GUIDE MODAL ═══ -->
+<div id="guideOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9000;animation:gfade .2s ease;" onclick="if(event.target===this)closeGuide()">
+<div id="guideModal" style="
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(900px,96vw);max-height:90vh;
+  background:#fff;border-radius:16px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  display:flex;flex-direction:column;">
+
+  <!-- header -->
+  <div style="background:linear-gradient(90deg,var(--acd),var(--ac));padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:20px;">📖</span>
+      <div>
+        <div style="font-family:'Noto Serif Thai',serif;font-weight:800;font-size:16px;color:#fff;">คู่มือการใช้งาน</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.7);">ระบบตรวจสอบ ปพ.1 — คลิกที่เมนูเพื่อดูรายละเอียด</div>
+      </div>
+    </div>
+    <button type="button" onclick="closeGuide()"
+      style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.4);
+             color:#fff;border-radius:50%;width:32px;height:32px;font-size:16px;
+             cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+  </div>
+
+  <!-- body -->
+  <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
+
+    <!-- sidebar menu -->
+    <div style="width:220px;flex-shrink:0;background:#F7FAFA;border-right:1px solid var(--bdr);
+      overflow-y:auto;padding:10px 0;" id="guideMenu"></div>
+
+    <!-- content area -->
+    <div style="flex:1;overflow-y:auto;padding:24px 28px;min-height:420px;" id="guideContent"></div>
+  </div>
+</div>
+</div>
+
+<style>
+@keyframes gfade{from{opacity:0}to{opacity:1}}
+.gmenu-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;cursor:pointer;
+  font-family:'Sarabun',sans-serif;font-size:14px;
+  /* font-weight คงที่ 600 เสมอ ไม่เปลี่ยนเมื่อ hover — ป้องกัน layout shift */
+  font-weight:600;
+  color:var(--ink2);border-left:3px solid transparent;
+  background:transparent;
+  transition:background .12s,color .12s,border-color .12s;
+  user-select:none;
+}
+.gmenu-item:hover{
+  background:var(--acp);
+  color:var(--acd);
+  border-left-color:var(--ac);
+}
+.gmenu-item.active{
+  background:var(--acp);
+  color:var(--acd);
+  border-left-color:var(--ac);
+}
+.gmenu-item .gicon{font-size:17px;flex-shrink:0;width:22px;text-align:center;}
+.gcontent h2{font-family:'Noto Serif Thai',serif;font-size:20px;font-weight:800;
+  color:var(--acd);margin-bottom:12px;padding-bottom:8px;
+  border-bottom:2px solid var(--acp);}
+.gcontent h3{font-family:'Noto Serif Thai',serif;font-size:16px;font-weight:700;
+  color:var(--acd);margin:16px 0 8px;}
+.gcontent p{font-size:14px;color:var(--ink);line-height:1.8;margin-bottom:8px;}
+.gcontent ul{padding-left:20px;margin-bottom:8px;}
+.gcontent li{font-size:14px;color:var(--ink);line-height:1.85;margin-bottom:4px;}
+.gcontent .highlight{
+  background:var(--acp);border-left:4px solid var(--ac);
+  border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;
+  font-size:13px;color:var(--ink2);}
+.gcontent .note{
+  background:#FEF3C7;border-left:4px solid #E8A020;
+  border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;
+  font-size:13px;color:#78350F;}
+.gcontent .demo-box{
+  background:var(--sur2);border:1px solid var(--bdr);border-radius:10px;
+  padding:14px 16px;margin:12px 0;}
+.gcontent .step{
+  display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;}
+.gcontent .step-num{
+  min-width:26px;height:26px;border-radius:50%;
+  background:var(--ac);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px;}
+.gcontent .step-txt{font-size:14px;color:var(--ink);line-height:1.7;}
+.gcontent .crit-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;border-bottom:1px solid var(--bdr2);font-size:13px;}
+.gcontent .crit-row:last-child{border-bottom:none;}
+.gcontent .crit-row .lbl{color:var(--ink);}
+.gcontent .crit-row .val{font-weight:700;color:var(--ac);}
+.gcontent .badge{
+  display:inline-block;font-size:11px;font-weight:700;
+  padding:2px 10px;border-radius:100px;margin-left:6px;}
+.gcontent .badge.pass{background:#DCFCE7;color:#15803D;}
+.gcontent .badge.fail{background:#FEE2E2;color:#B91C1C;}
+</style>
+
+<script>
+/* ═══ GUIDE DATA ═══ */
+const GUIDE_ITEMS = [
+  {
+    icon:'🏫',
+    label:'ภาพรวมระบบ',
+    content:`
+      <h2>ระบบตรวจสอบ ปพ.1 คืออะไร</h2>
+      <p>ระบบนี้ช่วยตรวจสอบความถูกต้องของระเบียนแสดงผลการเรียน (ปพ.1) อ้างอิงหลักสูตรแกนกลางการศึกษาขั้นพื้นฐาน พุทธศักราช 2551</p>
+      <div class="highlight">
+        <strong>ความสามารถหลัก</strong><br>
+        • รองรับทั้ง ประถมศึกษา (ป.1-6) และ มัธยมศึกษา (ม.1-3)<br>
+        • วางข้อความจาก ปพ.1 แล้วระบบแยกข้อมูลเข้าตารางให้อัตโนมัติ<br>
+        • ตรวจสอบหน่วยกิต/ชั่วโมงพร้อมแจ้งเหตุผลหากไม่ผ่าน<br>
+        • สรุปหน่วยกิตรายกลุ่มสาระการเรียนรู้<br>
+        • พิมพ์รายงานได้จากเบราว์เซอร์
+      </div>
+      <div class="note">
+        <strong>การเข้าใช้งาน:</strong> ไม่ต้องติดตั้งโปรแกรม เปิดเบราว์เซอร์แล้วใช้ได้เลย
+      </div>`,
+  },
+  {
+    icon:'🔄',
+    label:'เลือกระดับชั้น',
+    content:`
+      <h2>การเลือกระดับชั้น</h2>
+      <p>ด้านบนสุดของหน้าจอมีปุ่มเลือกระดับชั้น ระบบจะเปลี่ยนทั้งธีมสีและเกณฑ์ตรวจสอบตามระดับที่เลือก</p>
+      <div class="demo-box" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div style="background:#0D7377;color:#fff;padding:10px 24px;border-radius:100px;font-weight:700;font-size:14px;">🎓 มัธยมศึกษา</div>
+        <div style="color:var(--ink3);font-size:13px;">← ธีมสีเขียวน้ำทะเล · เกณฑ์หน่วยกิต</div>
+      </div>
+      <div style="height:8px;"></div>
+      <div class="demo-box" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+        <div style="background:#C2410C;color:#fff;padding:10px 24px;border-radius:100px;font-weight:700;font-size:14px;">🏫 ประถมศึกษา</div>
+        <div style="color:var(--ink3);font-size:13px;">← ธีมสีส้ม · เกณฑ์ชั่วโมง</div>
+      </div>
+      <div class="note">เมื่อสลับระดับชั้น ข้อมูลที่กรอกไว้จะถูกล้างทั้งหมด ควรตรวจสอบให้แน่ใจก่อนสลับ</div>`,
+  },
+  {
+    icon:'📋',
+    label:'กรอกรายวิชา',
+    content:`
+      <h2>การกรอกรายวิชา</h2>
+      <h3>ขั้นตอน</h3>
+      <div class="step"><div class="step-num">1</div><div class="step-txt">เลือกแท็บภาคเรียน/ปีที่ต้องการ</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-txt">คัดลอกข้อความรายวิชาจาก ปพ.1</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-txt">วางในช่องข้อความ แล้วกดปุ่ม <strong>"→ แยกข้อมูลเข้าตาราง"</strong></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-txt">ตรวจสอบและแก้ไข <strong>"ประเภท"</strong> วิชา (พื้นฐาน/เพิ่มเติม) ในตาราง</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-txt">ทำซ้ำสำหรับทุกภาค/ปีที่เหลือ</div></div>
+      <h3>รูปแบบข้อความที่รองรับ</h3>
+      <div class="demo-box" style="font-family:monospace;font-size:13px;line-height:2;">
+        ท21101 ภาษาไทย 1.5<br>
+        ค21101 คณิตศาสตร์ 1.5<br>
+        ว21101 วิทยาศาสตร์และเทคโนโลยี 1.5<br>
+        <span style="color:var(--ink3);font-size:11px;">← รหัสวิชา ชื่อวิชา หน่วยกิต</span>
+      </div>
+      <div class="note">ตัวเลขท้ายบรรทัดคือหน่วยกิต/ชั่วโมง — จะมีรหัสวิชาหรือไม่ก็ได้</div>`,
+  },
+  {
+    icon:'➕',
+    label:'เพิ่ม/ลบวิชา',
+    content:`
+      <h2>การเพิ่มและลบวิชาในตาราง</h2>
+      <p>หลังจากแยกข้อมูลเข้าตารางแล้ว สามารถแก้ไขได้ทุกช่อง</p>
+      <h3>เพิ่มวิชา</h3>
+      <div class="demo-box">
+        กดปุ่ม <strong style="background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.5);color:#0D7377;padding:3px 10px;border-radius:6px;font-size:13px;">+ เพิ่มวิชา</strong>
+        ที่มุมขวาบนของแถบสีแต่ละภาค/ปี จะได้แถวว่างใหม่พร้อมกรอกข้อมูล
+      </div>
+      <h3>ลบวิชา</h3>
+      <div class="demo-box">
+        กดปุ่ม <strong style="color:#B91C1C;font-size:16px;">×</strong> ท้ายแถววิชาที่ต้องการลบ
+      </div>
+      <h3>แก้ไขข้อมูล</h3>
+      <p>คลิกที่ช่องชื่อวิชา ประเภท หรือหน่วยกิต/ชั่วโมง แล้วแก้ไขได้โดยตรง ระบบคำนวณผลรวมใหม่ให้อัตโนมัติ</p>`,
+  },
+  {
+    icon:'🎯',
+    label:'กิจกรรมพัฒนาผู้เรียน',
+    content:`
+      <h2>กิจกรรมพัฒนาผู้เรียน</h2>
+      <p>กรอกชั่วโมงกิจกรรมในตารางด้านล่างส่วนรายวิชา</p>
+      <h3>ระดับมัธยมศึกษา</h3>
+      <div class="demo-box">
+        <div style="font-size:13px;margin-bottom:8px;font-weight:700;">3 ตาราง แยกตามปี (ม.1, ม.2, ม.3) แต่ละตารางมี 2 ภาค</div>
+        <div class="crit-row"><span class="lbl">รวมทุกกิจกรรม/ภาค</span><span class="val">= 60 ชม.พอดี</span></div>
+        <div class="crit-row"><span class="lbl">กิจกรรมเพื่อสังคมฯ/ปี</span><span class="val">= 15 ชม.พอดี</span></div>
+      </div>
+      <h3>ระดับประถมศึกษา</h3>
+      <div class="demo-box">
+        <div style="font-size:13px;margin-bottom:8px;font-weight:700;color:#C2410C;">6 ตาราง แยกตามปี (ป.1-ป.6) ไม่แยกภาคเรียน</div>
+        <div class="crit-row"><span class="lbl">รวมทุกกิจกรรม/ปี</span><span class="val" style="color:#C2410C">= 120 ชม.พอดี</span></div>
+        <div class="crit-row"><span class="lbl">กิจกรรมเพื่อสังคมฯ/ปี</span><span class="val" style="color:#C2410C">= 10 ชม.พอดี</span></div>
+      </div>
+      <div class="note">ระบบแสดงผลรวมและ ✓/✗ ทันทีเมื่อกรอกตัวเลข ไม่ต้องกดปุ่มใดเพิ่ม</div>`,
+  },
+  {
+    icon:'📊',
+    label:'เกณฑ์ตรวจสอบ',
+    content:`
+      <h2>เกณฑ์การตรวจสอบ</h2>
+      <h3>🎓 ระดับมัธยมศึกษา</h3>
+      <div class="demo-box">
+        <div class="crit-row"><span class="lbl">หน่วยกิตพื้นฐาน</span><span class="val">= 66 พอดี</span></div>
+        <div class="crit-row"><span class="lbl">หน่วยกิตเพิ่มเติม</span><span class="val">≥ 11</span></div>
+        <div class="crit-row"><span class="lbl">หน่วยกิตรวม</span><span class="val">≥ 77</span></div>
+        <div class="crit-row"><span class="lbl">กิจกรรมรวม/ภาค</span><span class="val">= 60 ชม.พอดี</span></div>
+        <div class="crit-row"><span class="lbl">กิจกรรมสังคมฯ/ปี</span><span class="val">= 15 ชม.พอดี</span></div>
+      </div>
+      <h3>🏫 ระดับประถมศึกษา</h3>
+      <div class="demo-box">
+        <div class="crit-row"><span class="lbl">วิชาพื้นฐาน/ปี</span><span class="val" style="color:#C2410C">= 840 ชม.พอดี</span></div>
+        <div class="crit-row"><span class="lbl">ประวัติศาสตร์/ปี</span><span class="val" style="color:#C2410C">= 40 ชม.พอดี (รวมในพื้นฐาน)</span></div>
+        <div class="crit-row"><span class="lbl">วิชาเพิ่มเติม/ปี</span><span class="val" style="color:#C2410C">≥ 40 ชม.</span></div>
+        <div class="crit-row"><span class="lbl">กิจกรรมรวม/ปี</span><span class="val" style="color:#C2410C">= 120 ชม.พอดี</span></div>
+        <div class="crit-row"><span class="lbl">กิจกรรมสังคมฯ/ปี</span><span class="val" style="color:#C2410C">= 10 ชม.พอดี</span></div>
+      </div>`,
+  },
+  {
+    icon:'✓',
+    label:'ดูผลลัพธ์',
+    content:`
+      <h2>การอ่านผลลัพธ์</h2>
+      <p>กดปุ่ม <strong>"✓ ตรวจสอบและรายงานผล"</strong> จะแสดงผล 3 แท็บ</p>
+      <h3>📖 แท็บรายวิชา</h3>
+      <p>ตารางแสดงรายวิชาทุกวิชาพร้อมหน่วยกิต/ชั่วโมงแยกตามภาค/ปี</p>
+      <h3>🎯 แท็บกิจกรรม</h3>
+      <p>ตารางแสดงกิจกรรมพัฒนาผู้เรียนรายปี พร้อมสัญลักษณ์ผ่าน/ไม่ผ่าน</p>
+      <h3>📊 แท็บสรุปหน่วยกิต</h3>
+      <p>ตารางสรุปแยกตาม 8 กลุ่มสาระการเรียนรู้</p>
+      <div class="demo-box">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:13px;">
+          <span style="color:#15803D;font-weight:700;">✓ สีเขียว</span> = ผ่านเกณฑ์ &nbsp;|&nbsp;
+          <span style="color:#B91C1C;font-weight:700;">✗ สีแดง</span> = ไม่ผ่านเกณฑ์
+        </div>
+        <div style="margin-top:8px;font-size:13px;">
+          <div>• <strong>"ชั่วโมงเกินเกณฑ์ที่กำหนด"</strong> — ค่าที่กรอกมากกว่าที่กำหนด</div>
+          <div>• <strong>"ชั่วโมงไม่ครบตามเกณฑ์ที่กำหนด"</strong> — ค่าที่กรอกน้อยกว่าที่กำหนด</div>
+        </div>
+      </div>`,
+  },
+  {
+    icon:'🖨',
+    label:'การพิมพ์รายงาน',
+    content:`
+      <h2>การพิมพ์รายงาน</h2>
+      <div class="step"><div class="step-num">1</div><div class="step-txt">กดปุ่ม <strong>"🖨 พิมพ์รายงาน"</strong> ด้านบนส่วนผลลัพธ์</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-txt">หน้าต่างพิมพ์จะเปิดขึ้นโดยแสดงเฉพาะส่วนผลลัพธ์เท่านั้น</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-txt">เลือกเครื่องพิมพ์หรือ "บันทึกเป็น PDF"</div></div>
+      <div class="note">
+        <strong>แนะนำการตั้งค่า:</strong><br>
+        • กระดาษ A4 แนวตั้ง<br>
+        • เปิดใช้ "พิมพ์สีพื้นหลัง" เพื่อให้ตารางแสดงสีครบถ้วน
+      </div>`,
+  },
+  {
+    icon:'❓',
+    label:'คำถามที่พบบ่อย',
+    content:`
+      <h2>คำถามที่พบบ่อย</h2>
+      <h3>Q: วางข้อความแล้วไม่มีวิชาขึ้นมา</h3>
+      <p>ตรวจสอบว่าข้อความมีตัวเลขหน่วยกิต/ชั่วโมงอยู่ท้ายบรรทัด และแต่ละวิชาขึ้นบรรทัดใหม่</p>
+      <h3>Q: ประเภทวิชาที่แยกมาไม่ถูกต้อง</h3>
+      <p>ระบบกำหนดทุกวิชาเป็น "พื้นฐาน" ไว้ก่อน ต้องเปลี่ยนเป็น "เพิ่มเติม" หรือ "ประวัติศาสตร์" เองในตาราง</p>
+      <h3>Q: ข้อมูลจะหายหลังปิดเบราว์เซอร์ไหม</h3>
+      <p>ใช่ ระบบไม่บันทึกข้อมูล ควรพิมพ์ผลลัพธ์ก่อนปิดหน้าต่าง</p>
+      <h3>Q: ตรวจสอบแล้วไม่ผ่าน แต่คิดว่าถูกแล้ว</h3>
+      <p>ดูรายการปัญหาใต้การ์ดสรุป ระบบจะบอกว่าส่วนใดมีปัญหาและขาด/เกินเท่าไหร่</p>
+      <h3>Q: สรุปหน่วยกิตแสดง "-" ในบางวิชา</h3>
+      <p>แสดงว่าไม่พบวิชาในกลุ่มสาระนั้น ตรวจสอบว่าชื่อวิชาที่กรอกมีคำสำคัญเช่น "คณิตศาสตร์" "ภาษาไทย" เป็นต้น</p>`,
+  },
+];
+
+function openGuide(){
+  const overlay=document.getElementById('guideOverlay');
+  overlay.style.display='flex';
+  const menu=document.getElementById('guideMenu');
+  menu.innerHTML='';
+  GUIDE_ITEMS.forEach((item,i)=>{
+    const div=document.createElement('div');
+    div.className='gmenu-item'+(i===0?' active':'');
+    div.innerHTML=`<span class="gicon">${item.icon}</span><span>${item.label}</span>`;
+    div.id=`gmenu_${i}`;
+    // เปลี่ยน content เมื่อ click เท่านั้น — ไม่ใช้ hover เพื่อหลีกเลี่ยง flickering
+    div.addEventListener('click',()=>showGuide(i));
+    menu.appendChild(div);
+  });
+  showGuide(0);
+}
+
+function showGuide(i){
+  document.querySelectorAll('.gmenu-item').forEach((el,j)=>el.classList.toggle('active',j===i));
+  const content=document.getElementById('guideContent');
+  content.className='gcontent';
+  content.innerHTML=GUIDE_ITEMS[i].content;
+  content.scrollTop=0;
+}
+
+function closeGuide(){
+  document.getElementById('guideOverlay').style.display='none';
+}
+
+// close on Escape key
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGuide();});
+</script>
+
 </body>
 </html>
